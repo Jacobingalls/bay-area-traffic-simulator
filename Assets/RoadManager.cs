@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading;
 using UnityEngine;
 
 public enum Size : byte { Small, Medium, Large }
@@ -284,14 +285,12 @@ public class RoadManager : MonoBehaviour {
 
     public Material roadColor, pathUsed, pathConsidered, pathStart, pathEnd;
 
-
-
     public RoadTile[,] tiles = new RoadTile[100, 100]; // row, col
 
-    System.Random rnd = new System.Random();
 
 	// Use this for initialization
     void Start () {
+        System.Random rnd = new System.Random();
         for (int row = 0; row < tiles.GetLength(0); row ++) {
             for (int col = 0; col < tiles.GetLength(1); col++)
             {
@@ -334,52 +333,14 @@ public class RoadManager : MonoBehaviour {
         }
 	}
 
-    double i = 0;
+
 
 	// Update is called once per frame
 	void Update () {
-        i += Time.deltaTime;
-
-        if (i > 1)
-        {
-            i = 0;
-            print("Starting...");
-
-            // Reset all the tiles back to gray.
-            for (int row = 0; row < tiles.GetLength(0); row++)
-            {
-                for (int col = 0; col < tiles.GetLength(1); col++)
-                {
-                    tiles[row, col].gameObject.GetComponent<Renderer>().material = roadColor;
-                }
-            }
+        
 
 
 
-            // We now want to check the algo
-            var startTile = tiles[10, 10];
-            var endTile = tiles[rnd.Next() % 100, rnd.Next() % 100];
-
-            var path = startTile.findPathToLocation(endTile.location);
-            if (path != null)
-            {
-                print("Path:");
-                print(path.Count);
-                foreach (var loc in path)
-                {
-                    tiles[loc.row, loc.col].gameObject.GetComponent<Renderer>().material = pathUsed;
-                }
-            }
-            else
-            {
-                print("Path was null.");
-            }
-
-            startTile.gameObject.GetComponent<Renderer>().material = pathStart;
-            endTile.gameObject.GetComponent<Renderer>().material = pathEnd;
-
-            i = 0;
-        }
 
 	}
 }
