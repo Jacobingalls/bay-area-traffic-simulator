@@ -53,19 +53,19 @@ public class RoadTile : MonoBehaviour {
 	public void Update() {
         var pos = gameObject.transform.position;
                             
-        // Vertical Road Debug
-        if (verticalRoad != null) {
+        //// Vertical Road Debug
+        //if (verticalRoad != null) {
             
-            if (verticalRoad.up_left) { Debug.DrawLine(new Vector3(pos.x, pos.y + 1, pos.z), new Vector3(pos.x, pos.y + 1, pos.z + 0.5f), Color.red); }
-            if (verticalRoad.down_right) { Debug.DrawLine(new Vector3(pos.x, pos.y + 1, pos.z), new Vector3(pos.x, pos.y + 1, pos.z - 0.5f), Color.black); }
-        }
+        //    if (verticalRoad.up_left) { Debug.DrawLine(new Vector3(pos.x, pos.y + 1, pos.z), new Vector3(pos.x, pos.y + 1, pos.z - 0.5f), Color.red); }
+        //    if (verticalRoad.down_right) { Debug.DrawLine(new Vector3(pos.x, pos.y + 1, pos.z), new Vector3(pos.x, pos.y + 1, pos.z + 0.5f), Color.black); }
+        //}
 
-        // Horizontal Road Debug
-        if (horizontalRoad != null)
-        {
-            if (horizontalRoad.up_left) { Debug.DrawLine(new Vector3(pos.x, pos.y + 1, pos.z), new Vector3(pos.x + 0.5f, pos.y + 1, pos.z), Color.blue); }
-            if (horizontalRoad.down_right) { Debug.DrawLine(new Vector3(pos.x, pos.y + 1, pos.z), new Vector3(pos.x - 0.5f, pos.y + 1, pos.z), Color.white); }
-        }
+        //// Horizontal Road Debug
+        //if (horizontalRoad != null)
+        //{
+        //    if (horizontalRoad.up_left) { Debug.DrawLine(new Vector3(pos.x, pos.y + 1, pos.z), new Vector3(pos.x - 0.5f, pos.y + 1, pos.z), Color.blue); }
+        //    if (horizontalRoad.down_right) { Debug.DrawLine(new Vector3(pos.x, pos.y + 1, pos.z), new Vector3(pos.x + 0.5f, pos.y + 1, pos.z), Color.white); }
+        //}
 	}
 
     public List<DirectionOfTravel> getNeighbors() {
@@ -172,7 +172,6 @@ public class RoadTile : MonoBehaviour {
             // Take the first value
             var current = locationsToCheck.Dequeue();
             var currentRoadTile = roadManager.tiles[current.row, current.col];
-            print("Checking [" + current.row + ", " + current.col+ "]");
 
             // If this location is where we want to go, then we need to exit so that we can recompute our path
             if (current.Equals(goal)) {
@@ -183,8 +182,6 @@ public class RoadTile : MonoBehaviour {
             foreach (var dir in getNeighbors()) {
                 var neighbor = currentRoadTile.getNeighborRoadTile(dir);
                 if (neighbor != null) {
-                    neighbor.gameObject.GetComponent<Renderer>().material.color = Color.yellow;
-                    print("Looking at neighbor [" + current.row + ", " + current.col + "]");
 
                     var cost = costOfTravelInDirectionOfTravel(dir, neighbor);
                     if (cost != null)
@@ -284,12 +281,17 @@ public class PriorityQueue<T>
 public class RoadManager : MonoBehaviour {
 
     public GameObject prefab;
-    public RoadTile[,] tiles = new RoadTile[10, 10]; // row, col
+
+    public Material roadColor, pathUsed, pathConsidered, pathStart, pathEnd;
+
+
+
+    public RoadTile[,] tiles = new RoadTile[100, 100]; // row, col
+
+    System.Random rnd = new System.Random();
 
 	// Use this for initialization
-	void Start () {
-        System.Random rnd = new System.Random();
-
+    void Start () {
         for (int row = 0; row < tiles.GetLength(0); row ++) {
             for (int col = 0; col < tiles.GetLength(1); col++)
             {
@@ -304,10 +306,10 @@ public class RoadManager : MonoBehaviour {
                 tile.roadManager = this;
 
                 // Make the roads. Right now, lets randomly seed
-                var up    = rnd.NextDouble() >= 0.25f;
-                var down  = rnd.NextDouble() >= 0.25f;
-                var left  = rnd.NextDouble() >= 0.25f;
-                var right = rnd.NextDouble() >= 0.25f;
+                var up    = rnd.NextDouble() >= 0.5f;
+                var down  = rnd.NextDouble() >= 0.5f;
+                var left  = rnd.NextDouble() >= 0.5f;
+                var right = rnd.NextDouble() >= 0.5f;
                 var vsize = (rnd.Next() % 3) + 1;
                 var hsize = (rnd.Next() % 3) + 1;
 
@@ -330,31 +332,54 @@ public class RoadManager : MonoBehaviour {
                 tiles[row, col] = tile;
             } 
         }
-
-
-        // We now want to check the algo
-        var startTile = tiles[1, 1];
-        var endTile = tiles[5, 5];
-
-        var path = startTile.findPathToLocation(endTile.location);
-        if (path != null) {
-            print("Path:");
-            print(path.Count);
-            foreach (var loc in path) {
-                tiles[loc.row, loc.col].gameObject.GetComponent<Renderer>().material.color = Color.blue;
-            }
-        } else {
-            print("Path was null.");
-        }
-
-        startTile.gameObject.GetComponent<Renderer>().material.color = Color.red;
-        endTile.gameObject.GetComponent<Renderer>().material.color = Color.green;
 	}
-	
+
+    double i = 0;
+
 	// Update is called once per frame
 	void Update () {
-		
+        i += Time.deltaTime;
 
+        if (i > 1)
+        {
+            i = 0;
+            print("Starting...");
+
+            // Reset all the tiles back to gray.
+            for (int row = 0; row < tiles.GetLength(0); row++)
+            {
+                for (int col = 0; col < tiles.GetLength(1); col++)
+                {
+                    tiles[row, col].gameObject.GetComponent<Renderer>().material = roadColor;
+                }
+            }
+
+
+
+            // We now want to check the algo
+            var startTile = tiles[10, 10];
+            var endTile = tiles[rnd.Next() % 100, rnd.Next() % 100];
+
+            var path = startTile.findPathToLocation(endTile.location);
+            if (path != null)
+            {
+                print("Path:");
+                print(path.Count);
+                foreach (var loc in path)
+                {
+                    tiles[loc.row, loc.col].gameObject.GetComponent<Renderer>().material = pathUsed;
+                }
+            }
+            else
+            {
+                print("Path was null.");
+            }
+
+            startTile.gameObject.GetComponent<Renderer>().material = pathStart;
+            endTile.gameObject.GetComponent<Renderer>().material = pathEnd;
+
+            i = 0;
+        }
 
 	}
 }
