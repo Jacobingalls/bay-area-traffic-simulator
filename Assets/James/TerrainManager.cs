@@ -13,18 +13,24 @@ public class TerrainManager : MonoBehaviour {
 
 	public int height = 10;
 
-	[Range(1.0f, 100.0f)]
-	public float yScale = 10.0f;
+	[Range(0.1f, 2.0f)]
+	public float yScale = 1.0f / 1.2f;
+
+	[Range(1, 20)]
+	public int quantizationRange = 6;
 
 	public Texture2D heightmap;
 	public GameObject tilePrefab;
 	public Material terrainMaterial;
+	public TerrainData terrainData;
 
 	private Tile[,] tiles;
 
 	private MeshRenderer meshRenderer;
 	private MeshFilter meshFilter;
 	private Mesh mesh;
+	
+	private float maxHeight;
 
 	int[] GetNeighborHeights(int row, int col, int[,] heights) {
 		int[] neighbors = new int[4]; // E N W S
@@ -55,8 +61,19 @@ public class TerrainManager : MonoBehaviour {
 		return neighbors;
 	}
 
+	void OnValuesUpdates() {
+		terrainData.ApplyToMaterial(terrainMaterial);
+		terrainData.UpdateMeshHeights(terrainMaterial, 0.0f, maxHeight);
+	}
+
 	// Use this for initialization
 	void Start () {
+		maxHeight = quantizationRange * yScale;
+		
+		terrainData.OnValuesUpdates += OnValuesUpdates;
+		terrainData.ApplyToMaterial(terrainMaterial);
+		terrainData.UpdateMeshHeights(terrainMaterial, 0.0f, maxHeight);
+
 		tiles = new Tile[height, width];
 		// for (int row = 0; row < height; row++) {
 		// 	for (int col = 0; col < width; col++) {
@@ -90,7 +107,7 @@ public class TerrainManager : MonoBehaviour {
 
 		for (int row = 0; row < height; row++) {
 			for (int col = 0; col < width; col++) {
-				float height = Mathf.RoundToInt(heightmap.GetPixel(col, row).r * 6.0f) / 1.7f;
+				float height = Mathf.RoundToInt(heightmap.GetPixel(col, row).r * 6.0f) * yScale;
 				vertices.Add(new Vector3(col, height, row));
 				if (row % 2 == 0) {
 					if (col % 2 == 0) {
