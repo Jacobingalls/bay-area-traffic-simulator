@@ -88,7 +88,7 @@ public class RoadTile : MonoBehaviour {
         {
             
             case DirectionOfTravel.Up:
-                if (location.row > roadManager.tiles.GetLength(0)) { return null; }
+                if (location.row + 1 >= roadManager.tiles.GetLength(0)) { return null; }
                 return roadManager.tiles[location.row + 1, location.col];
             case DirectionOfTravel.Down:
                 if (location.row <= 0) { return null; }
@@ -98,7 +98,7 @@ public class RoadTile : MonoBehaviour {
                 if (location.col <= 0) { return null; }
                 return roadManager.tiles[location.row, location.col - 1];
             case DirectionOfTravel.Right:
-                if (location.col > roadManager.tiles.GetLength(1)) { return null; }
+                if (location.col + 1 >= roadManager.tiles.GetLength(1)) { return null; }
                 return roadManager.tiles[location.row, location.col + 1];
 
             default:
@@ -118,9 +118,12 @@ public class RoadTile : MonoBehaviour {
         switch (directionOfTravel) {
             case DirectionOfTravel.Up:
             case DirectionOfTravel.Down:
+
                 // If we have a road going up, and the other tile has a road going up.
                 if (verticalRoad != null && ((verticalRoad.up_left && directionOfTravel == DirectionOfTravel.Up) || (verticalRoad.down_right && directionOfTravel == DirectionOfTravel.Down))) {
-                    return verticalRoad.cost();
+                    if (nextRoadTile.verticalRoad != null && ((nextRoadTile.verticalRoad.up_left && directionOfTravel == DirectionOfTravel.Up) || (nextRoadTile.verticalRoad.down_right && directionOfTravel == DirectionOfTravel.Down))) {
+                        return verticalRoad.cost() + nextRoadTile.verticalRoad.cost();
+                    }
                 }
 
                 break;
@@ -129,14 +132,16 @@ public class RoadTile : MonoBehaviour {
             case DirectionOfTravel.Right:
                 // If we have a road going up, and the other tile has a road going up.
                 if (horizontalRoad != null && ((horizontalRoad.up_left && directionOfTravel == DirectionOfTravel.Left) || (horizontalRoad.down_right && directionOfTravel == DirectionOfTravel.Right))) {
-                    return horizontalRoad.cost();
+                    if (nextRoadTile.horizontalRoad != null && ((nextRoadTile.horizontalRoad.up_left && directionOfTravel == DirectionOfTravel.Left) || (nextRoadTile.horizontalRoad.down_right && directionOfTravel == DirectionOfTravel.Right))) {
+                            return horizontalRoad.cost() + nextRoadTile.horizontalRoad.cost();
+                    }
                 }
 
                 break;
         }
 
         if (nextRoadTile.horizontalRoad != null || nextRoadTile.verticalRoad != null) {
-            return 10; // The cost of navigating your car though the sidewalk.
+            return 100; // The cost of navigating your car though the sidewalk.
         } else {
             return null;
         }
