@@ -32,6 +32,8 @@ public enum DirectionOfTravel: byte {Up, Down, Left, Right}
 
 // Tile is a cell on the game board. Roads interconnect tiles
 public class RoadTile : MonoBehaviour {
+    public RoadManager roadManager;
+
     // Where it is on the map
     public Location location;
 
@@ -59,7 +61,7 @@ public class RoadTile : MonoBehaviour {
         }
 
         // Horizontal Road Debug
-        if (verticalRoad != null)
+        if (horizontalRoad != null)
         {
             if (horizontalRoad.up_left) { Debug.DrawLine(new Vector3(pos.x, pos.y + 1, pos.z), new Vector3(pos.x + 0.5f, pos.y + 1, pos.z), Color.blue); }
             if (horizontalRoad.down_right) { Debug.DrawLine(new Vector3(pos.x, pos.y + 1, pos.z), new Vector3(pos.x - 0.5f, pos.y + 1, pos.z), Color.white); }
@@ -82,25 +84,22 @@ public class RoadTile : MonoBehaviour {
      * Returns: Nullable RoadTile
      */
 	public RoadTile getNeighborRoadTile(DirectionOfTravel directionOfTravel) {
-        var gm = gameObject.GetComponent<RoadManager>();
-
-
         switch (directionOfTravel)
         {
             
             case DirectionOfTravel.Up:
-                if (location.col > gm.tiles.GetLength(0)) { return null; }
-                return gm.tiles[location.row + 1, location.col];
+                if (location.row > roadManager.tiles.GetLength(0)) { return null; }
+                return roadManager.tiles[location.row + 1, location.col];
             case DirectionOfTravel.Down:
-                if (location.col <= 0) { return null; }
-                return gm.tiles[location.row - 1, location.col];
+                if (location.row <= 0) { return null; }
+                return roadManager.tiles[location.row - 1, location.col];
 
             case DirectionOfTravel.Left:
                 if (location.col <= 0) { return null; }
-                return gm.tiles[location.row, location.col - 1];
+                return roadManager.tiles[location.row, location.col - 1];
             case DirectionOfTravel.Right:
-                if (location.col > gm.tiles.GetLength(1)) { return null; }
-                return gm.tiles[location.row, location.col + 1];
+                if (location.col > roadManager.tiles.GetLength(1)) { return null; }
+                return roadManager.tiles[location.row, location.col + 1];
 
             default:
                 return null;
@@ -151,21 +150,24 @@ public class RoadTile : MonoBehaviour {
     /*
      * Perform A* search to get to the requested location
      */
-    public Location[] findPathToLocation(Location goal) {
+    public List<Location> findPathToLocation(Location goal) {
 
         // Setup A*
-        var locationsToCheck = new SortedList<int, Location>(new ReverseComparer());
-        locationsToCheck.Add(0, goal);
+        var locationsToCheck = new PriorityQueue<Location>();
+        locationsToCheck.Enqueue(location, 0);
 
         var cameFrom = new Dictionary<Location, Location>(); // cameFrom[a] = b. I got to a by being in b.
         var costSoFar = new Dictionary<Location, int>(); // The cost for location (until a better one comes around)
-
+        costSoFar[location] = 0;
+        cameFrom[location] = location;
 
         // Itterate in A*
         while (locationsToCheck.Count > 0) {
+
             // Take the first value
-            var current = locationsToCheck[0];
-            locationsToCheck.RemoveAt(0);
+            var current = locationsToCheck.Dequeue();
+            var currentRoadTile = roadManager.tiles[current.row, current.col];
+            print("Checking [" + current.row + ", " + current.col+ "]");
 
             // If this location is where we want to go, then we need to exit so that we can recompute our path
             if (current.Equals(goal)) {
@@ -174,37 +176,102 @@ public class RoadTile : MonoBehaviour {
 
             // We can now check the cardinal directions.
             foreach (var dir in getNeighbors()) {
-                var neighbor = getNeighborRoadTile(dir);
-                var cost = costOfTravelInDirectionOfTravel(dir, neighbor);
-                if (cost != null) {
-                    var newCost = costSoFar[current] + cost;
-                    if (newCost != null && (!costSoFar.ContainsKey(neighbor.location) || newCost < costSoFar[neighbor.location])) {
-                        costSoFar[neighbor.location] = newCost ?? 0;
-                        var priority = newCost + Heuristic(neighbor.location, goal);
-                        locationsToCheck.Add(priority ?? 0, neighbor.location);
-                        cameFrom[neighbor.location] = current;
+                var neighbor = currentRoadTile.getNeighborRoadTile(dir);
+                if (neighbor != null) {
+                    neighbor.gameObject.GetComponent<Renderer>().material.color = Color.yellow;
+                    print("Looking at neighbor [" + current.row + ", " + current.col + "]");
+
+                    var cost = costOfTravelInDirectionOfTravel(dir, neighbor);
+                    if (cost != null)
+                    {
+                        var newCost = costSoFar[current] + cost;
+                        if (newCost != null && (!costSoFar.ContainsKey(neighbor.location) || newCost < costSoFar[neighbor.location]))
+                        {
+                            costSoFar[neighbor.location] = newCost ?? 0;
+                            var priority = newCost + Heuristic(neighbor.location, goal);
+                            locationsToCheck.Enqueue(neighbor.location, priority ?? 0);
+                            cameFrom[neighbor.location] = current;
+                        }
                     }
                 }
             }
         }
 
+        // We may have fallen through, without finding the goal. So, lets make sure that the goal was found.
+        if (!cameFrom.ContainsKey(goal)) {
+            return null;
+        }
 
+        // backtrack
+        var backtrackingCurrent = goal;
+        var reversePath = new List<Location>();
+        while (!backtrackingCurrent.Equals(location)) {
+            reversePath.Add(backtrackingCurrent);
+            backtrackingCurrent = cameFrom[backtrackingCurrent];
+        }
 
-        return new Location[0];
+        // return the path (in the right direction)
+        reversePath.Reverse();
+        return reversePath;
     }
 }
 
-public class Location {
+public struct Location {
     public int row;
     public int col;
 
 }
 
-class ReverseComparer : IComparer<int>
+public struct FakeTuple<M, N> {
+    public M Item1;
+    public N Item2;
+
+    public FakeTuple(M item1, N item2) {
+        Item1 = item1;
+        Item2 = item2;
+    }
+}
+
+// Samelessly stolen from: https://www.redblobgames.com/pathfinding/a-star/implementation.html#csharp
+public class PriorityQueue<T>
 {
-    public int Compare(int x, int y)
+    // I'm using an unsorted array for this example, but ideally this
+    // would be a binary heap. There's an open issue for adding a binary
+    // heap to the standard C# library: https://github.com/dotnet/corefx/issues/574
+    //
+    // Until then, find a binary heap class:
+    // * https://github.com/BlueRaja/High-Speed-Priority-Queue-for-C-Sharp
+    // * http://visualstudiomagazine.com/articles/2012/11/01/priority-queues-with-c.aspx
+    // * http://xfleury.github.io/graphsearch.html
+    // * http://stackoverflow.com/questions/102398/priority-queue-in-net
+
+    private List<FakeTuple<T, double>> elements = new List<FakeTuple<T, double>>();
+
+    public int Count
     {
-        return -x.CompareTo(y);
+        get { return elements.Count; }
+    }
+
+    public void Enqueue(T item, double priority)
+    {
+        elements.Add(new FakeTuple<T, double>(item, priority));
+    }
+
+    public T Dequeue()
+    {
+        int bestIndex = 0;
+
+        for (int i = 0; i < elements.Count; i++)
+        {
+            if (elements[i].Item2 < elements[bestIndex].Item2)
+            {
+                bestIndex = i;
+            }
+        }
+
+        T bestItem = elements[bestIndex].Item1;
+        elements.RemoveAt(bestIndex);
+        return bestItem;
     }
 }
 
@@ -212,14 +279,14 @@ class ReverseComparer : IComparer<int>
 public class RoadManager : MonoBehaviour {
 
     public GameObject prefab;
-    public RoadTile[,] tiles = new RoadTile[100, 100]; // row, col
+    public RoadTile[,] tiles = new RoadTile[10, 10]; // row, col
 
 	// Use this for initialization
 	void Start () {
         System.Random rnd = new System.Random();
 
-        for (int row = 0; row < 100; row ++) {
-            for (int col = 0; col < 100; col++)
+        for (int row = 0; row < tiles.GetLength(0); row ++) {
+            for (int col = 0; col < tiles.GetLength(1); col++)
             {
                 var go = Instantiate(prefab);
                 go.transform.position = new Vector3(row, 0.0f, col);
@@ -229,22 +296,26 @@ public class RoadManager : MonoBehaviour {
                 tile.location = new Location();
                 tile.location.col = col;
                 tile.location.row = row;
+                tile.roadManager = this;
 
                 // Make the roads. Right now, lets randomly seed
-                var up    = rnd.NextDouble() >= 0.75f;
-                var down  = rnd.NextDouble() >= 0.75f;
-                var left  = rnd.NextDouble() >= 0.75f;
-                var right = rnd.NextDouble() >= 0.75f;
+                var up    = rnd.NextDouble() >= 0.25f;
+                var down  = rnd.NextDouble() >= 0.25f;
+                var left  = rnd.NextDouble() >= 0.25f;
+                var right = rnd.NextDouble() >= 0.25f;
+                var vsize = (rnd.Next() % 3) + 1;
+                var hsize = (rnd.Next() % 3) + 1;
+
                 if (up || down) {
                     tile.verticalRoad = new Road();
-                    tile.verticalRoad.size = Size.Medium;
+                    tile.verticalRoad.size = (Size) vsize;
                     tile.verticalRoad.up_left = up;
                     tile.verticalRoad.down_right = down;
                 }
 
                 if (left || right) {
                     tile.horizontalRoad = new Road();
-                    tile.horizontalRoad.size = Size.Medium;
+                    tile.horizontalRoad.size = (Size) hsize;
                     tile.horizontalRoad.up_left = up;
                     tile.horizontalRoad.down_right = down;
                 }
@@ -254,6 +325,25 @@ public class RoadManager : MonoBehaviour {
                 tiles[row, col] = tile;
             } 
         }
+
+
+        // We now want to check the algo
+        var startTile = tiles[1, 1];
+        var endTile = tiles[5, 5];
+
+        var path = startTile.findPathToLocation(endTile.location);
+        if (path != null) {
+            print("Path:");
+            print(path.Count);
+            foreach (var loc in path) {
+                tiles[loc.row, loc.col].gameObject.GetComponent<Renderer>().material.color = Color.blue;
+            }
+        } else {
+            print("Path was null.");
+        }
+
+        startTile.gameObject.GetComponent<Renderer>().material.color = Color.red;
+        endTile.gameObject.GetComponent<Renderer>().material.color = Color.green;
 	}
 	
 	// Update is called once per frame
