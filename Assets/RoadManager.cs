@@ -19,11 +19,11 @@ public class Road {
     public int cost() {
         switch (size) {
             case Size.Medium:
-                return 3;
+                return 5;
             case Size.Large:
                 return 1;
             default:
-                return 5; // Small and invalid
+                return 10; // Small and invalid
         }
     }
 
@@ -31,7 +31,7 @@ public class Road {
         switch (size)
         {
             case Size.Medium:
-                return 3.0f;
+                return 5.0f;
             case Size.Large:
                 return 10.0f;
             default:
@@ -339,8 +339,11 @@ public class RoadManager : MonoBehaviour {
                 }
 
                 // The red channel allows us to make the vertical more beefy, while the green is horizontal.
-                var vsize = (pxl.r >= 128) ? (pxl.r / 64) - 1 : 0;
-                var hsize = (pxl.g >= 128) ? (pxl.g / 64) - 1 : 0;
+                var r = (int)(pxl.r * 255);
+                var g = (int)(pxl.g * 255);
+
+                var vsize = (r >= 128) ? (r / 64) - 1 : 0;
+                var hsize = (g >= 128) ? (g / 64) - 1 : 0;
 
                 var pos = new Vector3(col * 4.0f + 2.0f, heights[row * 4, col * 4], row * 4.0f + 2.0f);
                 // var drawDebug = row %  == 0 && col % 3 == 0;
@@ -368,10 +371,28 @@ public class RoadManager : MonoBehaviour {
         }
 
         if(data.enableCarSim) {
-            makeACarGo(tiles[24, 16], tiles[20, 22]);
-            makeACarGo(tiles[20, 16], tiles[20, 18]);
-            makeACarGo(tiles[24, 16], tiles[19, 22]);
-            makeACarGo(tiles[24, 16], tiles[4, 40]);
+            var twiddles = new List<int>();
+            twiddles.Add(-1);
+            twiddles.Add( 0);
+            twiddles.Add( 1);
+
+
+            foreach (var twiddle1 in twiddles)
+            {
+                foreach (var twiddle2 in twiddles)
+                {
+                    foreach (var twiddle3 in twiddles)
+                    {
+                        foreach (var twiddle4 in twiddles)
+                        {
+                            makeACarGo(tiles[24 + twiddle1, 16 + twiddle2], tiles[20 + twiddle3, 22 + twiddle4]);
+                            makeACarGo(tiles[20 + twiddle1, 16 + twiddle2], tiles[20 + twiddle3, 18 + twiddle4]);
+                            makeACarGo(tiles[24 + twiddle1, 16 + twiddle2], tiles[19 + twiddle3, 22 + twiddle4]);
+                            makeACarGo(tiles[24 + twiddle1, 16 + twiddle2], tiles[4  + twiddle3, 40 + twiddle4]);
+                        }
+                    }
+                }
+            }
         } 
     }
 
