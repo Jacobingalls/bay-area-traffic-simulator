@@ -23,6 +23,7 @@ public class TerrainData : UpdateableData {
     float savedMax;
 
     [Header("Terrain Shader State")]
+    public Texture2D roadMap;
 
     public Color[] baseColors;
 

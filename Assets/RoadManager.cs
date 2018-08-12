@@ -199,6 +199,7 @@ public class RoadTile {
             reversePath.Add(backtrackingCurrent);
             backtrackingCurrent = cameFrom[backtrackingCurrent];
         }
+        reversePath.Add(location);
 
         // return the path (in the right direction)
         reversePath.Reverse();
@@ -276,7 +277,6 @@ public class RoadManager : MonoBehaviour {
 
     public void Initialize(TerrainManager tm) {
         var heights = tm.GetHeights();
-        System.Random rnd = new System.Random();
 
         for (int row = 0; row < tiles.GetLength(0); row ++) {
             for (int col = 0; col < tiles.GetLength(1); col++)
@@ -296,16 +296,38 @@ public class RoadManager : MonoBehaviour {
 
                 if(heights[row * 4, col * 4] == 0) {
                     continue;
-                } 
+                }
 
-                // Make the roads. Right now, lets randomly seed
+                // Make the roads.
+                var pxl = tm.terrainData.roadMap.GetPixel(col, row);
+                var dirA = pxl.r != 0; // Right now everything is all or nothing.
 
-                var up    = rnd.NextDouble() >= 0.5f;
-                var down  = rnd.NextDouble() >= 0.5f;
-                var left  = rnd.NextDouble() >= 0.5f;
-                var right = rnd.NextDouble() >= 0.5f;
-                var vsize = (rnd.Next() % 3) + 1;
-                var hsize = (rnd.Next() % 3) + 1;
+                var up = false;
+                if (row > 0) {
+                    up = tm.terrainData.roadMap.GetPixel(col, row - 1).r > 0;
+                }
+
+                var down = false;
+                if (row < tiles.GetLength(0))
+                {
+                    up = tm.terrainData.roadMap.GetPixel(col, row + 1).r > 0;
+                }
+
+                var left = false;
+                if (col > 0)
+                {
+                    up = tm.terrainData.roadMap.GetPixel(col - 1, row).r > 0;
+                }
+
+                var right = false;
+                if (col <= tiles.GetLength(1))
+                {
+                    up = tm.terrainData.roadMap.GetPixel(col + 1, row).r > 0;
+                }
+
+                // The red channel allows us to make the vertical more beefy, while the green is horizontal.
+                var vsize = (pxl.r >= 128) ? (pxl.r / 64) - 1 : 0;
+                var hsize = (pxl.g >= 128) ? (pxl.g / 64) - 1 : 0;
 
                 var pos = new Vector3(col * 4.0f + 2.0f, heights[row * 4, col * 4], row * 4.0f + 2.0f);
                 // var drawDebug = row %  == 0 && col % 3 == 0;
@@ -332,6 +354,7 @@ public class RoadManager : MonoBehaviour {
             } 
         }
 
+<<<<<<< HEAD
         if(data.enableCarSim) {
             for (var i = 0; i < 100; i ++) {
                 var car = Instantiate(data.carModel);
@@ -339,5 +362,13 @@ public class RoadManager : MonoBehaviour {
             }
         }
 
+=======
+        var car = Instantiate(tm.carModel);
+        var carPathfinder = car.GetComponent<CarPathfinder>();
+        carPathfinder.roadManager = gameObject;
+        carPathfinder.startTile = tiles[0, 10];
+        carPathfinder.endTile = tiles[10, 20];
+        carPathfinder.planAndGo();
+>>>>>>> origin/feature/cars
     }
 }
