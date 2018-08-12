@@ -8,12 +8,16 @@ public class CarPathfinder : MonoBehaviour
 {
     List<Location> path;
     bool shouldUpdatePath;
-    public RoadTile startTile, endTile;
+    public RoadTile originalStart, originalEnd, startTile, endTile;
 
     float progressOnCurrentSegment = 0.0f;
     int segment;
     public GameObject roadManager;
     bool needsAMove = false;
+
+    float refreshTime = 0;
+
+    public Material red, green, blue;
 
 
     public void planAndGo() {
@@ -72,25 +76,49 @@ public class CarPathfinder : MonoBehaviour
             }
 
 
+            // gameObject.GetComponent<Renderer>().material = green;
 
+            progressOnCurrentSegment += Time.deltaTime * 0.05f * speed;
 
-            progressOnCurrentSegment += Time.deltaTime * 0.50f * speed;
+            // Our position is based on our index.
+            var queue = getOurQueue(segment - 1);
+            var i = 0;
+            if (queue != null) {
+                foreach(var obj in queue) {
+                    if (obj.Equals(this)) {
+                        break;
+                    }
+
+                    i ++;
+                }
+            }
+
+            // While wating on a light we need to queue up.
+            var maxProgress = (float)(6 - i) / 5.0f;
+            if (progressOnCurrentSegment > maxProgress) {
+                progressOnCurrentSegment = maxProgress;
+                // gameObject.GetComponent<Renderer>().material = red;
+            }
 
             if (progressOnCurrentSegment >= 1) {
                 progressOnCurrentSegment = 0.0f;
+                // gameObject.GetComponent<Renderer>().material = blue;
 
                 if (segment + 1 >= path.Count) {
                     progressOnCurrentSegment = 0f;
-                    var temp = endTile;
-                    endTile = startTile;
-                    startTile = temp;
+
+                    if(current.location.Equals(originalStart.location)) {
+                        startTile = originalEnd;
+                        endTile = originalStart;
+                    } else {
+                        startTile = originalStart;
+                        endTile = originalEnd;
+                    }
+
                     path = null;
                     planAndGo();
                     return;
                 } else {
-                    //segment++;
-
-                    // Saturate for now, we are waiting for OK from light.
                     progressOnCurrentSegment = 1.0f;
                 }
 
@@ -104,74 +132,78 @@ public class CarPathfinder : MonoBehaviour
             gameObject.transform.position = realPos;
 
 
+
+            // refreshTime += Time.deltaTime;
+            // if (refreshTime >= 10)
+            // {
+            //     startTile = current;
+            //     planAndGo();
+            // }
         }
-
-
     }
 
 
-    public bool canMove() {
-        if (segment + 1 >= path.Count) { return true; }
+    public Queue<CarPathfinder> getOurQueue(int seg) {
+        if (seg + 1 >= path.Count) { return null; }
 
-        if (progressOnCurrentSegment < .8) { return false;}
-
-        var loc = path[segment];
+        var loc = path[seg];
         var current = roadManager.GetComponent<RoadManager>().tiles[loc.row, loc.col];
 
+        Queue<CarPathfinder> queue = null;
+
         // Going to move up
-        if (path[segment].row > path[segment + 1].row)
+        if (path[seg].row > path[seg + 1].row)
         {
-            return current.getNeighborRoadTile(DirectionOfTravel.Up).upQueue.Count < 5;
+            queue = current.getNeighborRoadTile(DirectionOfTravel.Up).upQueue;
         }
 
         // Going to move down
-        else if (path[segment].row < path[segment + 1].row)
+        else if (path[seg].row < path[seg + 1].row)
         {
-            return current.getNeighborRoadTile(DirectionOfTravel.Down).downQueue.Count < 5;
+            queue = current.getNeighborRoadTile(DirectionOfTravel.Down).downQueue;
         }
 
         // Going to move left
-        else if (path[segment].col < path[segment + 1].col)
+        else if (path[seg].col < path[seg + 1].col)
         {
-            return current.getNeighborRoadTile(DirectionOfTravel.Left).leftQueue.Count < 5;
+            queue = current.getNeighborRoadTile(DirectionOfTravel.Left).leftQueue;
         }
 
         // Going to move right
         else
         {
-            return current.getNeighborRoadTile(DirectionOfTravel.Right).rightQueue.Count < 5;
+            queue = current.getNeighborRoadTile(DirectionOfTravel.Right).rightQueue;
         }
+
+        return queue;
+    }
+
+    public bool canMove() {
+        if (progressOnCurrentSegment < .8) { return false;}
+
+        var queue = getOurQueue(segment);
+
+        if (queue == null) {
+            return false;
+        }
+
+        return queue.Count < 5;
     }
 
     public void move() {
-        if (segment + 1 >= path.Count) { return; }
+        var queue = getOurQueue(segment);
 
-        var loc = path[segment];
-        var current = roadManager.GetComponent<RoadManager>().tiles[loc.row, loc.col];
-
-        // Going to move up
-        if (path[segment].row > path[segment + 1].row)
-        {
-            current.getNeighborRoadTile(DirectionOfTravel.Up).upQueue.Enqueue(this);
+        if (queue == null) {
+            return;
         }
 
-        // Going to move down
-        else if (path[segment].row < path[segment + 1].row)
-        {
-            current.getNeighborRoadTile(DirectionOfTravel.Down).downQueue.Enqueue(this);
+        foreach(var obj in queue) {
+            if (obj.Equals(this)) {
+                return;
+            }
         }
 
-        // Going to move left
-        else if (path[segment].col < path[segment + 1].col)
-        {
-            current.getNeighborRoadTile(DirectionOfTravel.Left).leftQueue.Enqueue(this);
-        }
-
-        // Going to move right
-        else
-        {
-            current.getNeighborRoadTile(DirectionOfTravel.Right).rightQueue.Enqueue(this);
-        }
+        queue.Enqueue(this);
 
         segment++;
         progressOnCurrentSegment = 0;

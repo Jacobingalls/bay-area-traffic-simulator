@@ -65,7 +65,7 @@ public class RoadTile {
     public Queue<CarPathfinder> upQueue, downQueue, leftQueue, rightQueue;
     DirectionOfTravel phase = DirectionOfTravel.Up;
 
-    float totalSeconds = 5.0f;
+    float totalSeconds = 10.0f;
     float currentSeconds = 0.0f;
 
     public RoadTile() {
@@ -92,11 +92,16 @@ public class RoadTile {
         }
 
 
+        releaseACarInDirection(phase);
+        releaseACarInDirection(((DirectionOfTravel) (((byte) phase + 2) % 4)));
+    }
+
+    private void releaseACarInDirection(DirectionOfTravel dir) {
         // Debug.
         var a = new Vector3(location.col * 4 + 2, 8, location.row * 4 + 2);
         var b = new Vector3(location.col * 4 + 2, 8, location.row * 4 + 3);
-                
-        switch (phase) {
+
+        switch (dir) {
             case DirectionOfTravel.Up:
                 Debug.DrawLine(a, b, Color.magenta, 0.5f);
 
@@ -106,7 +111,8 @@ public class RoadTile {
                         upQueue.Dequeue();
                     }
                 } else {
-                    currentSeconds += 0.5f; // Help the clock along.
+                    // Debug.Log("Nothing in queue UP");
+                    // currentSeconds += 0.1f; // Help the clock along.
                 }
 
                 break;
@@ -123,7 +129,8 @@ public class RoadTile {
                     }
                 }
                 else {
-                    currentSeconds += 0.5f; // Help the clock along.
+                    // Debug.Log("Nothing in queue DOWN");
+                    // currentSeconds += 0.5f; // Help the clock along.
                 }
 
                 break;
@@ -140,7 +147,8 @@ public class RoadTile {
                     }
                 }
                 else {
-                    currentSeconds += 0.5f; // Help the clock along.
+                    // Debug.Log("Nothing in queue LEFT");
+                    // currentSeconds += 0.5f; // Help the clock along.
                 }
 
                 break;
@@ -157,14 +165,13 @@ public class RoadTile {
                     }
                 }
                 else {
-                    currentSeconds += 0.5f; // Help the clock along.
+                    // Debug.Log("Nothing in queue RIGHT");
+                    // currentSeconds += 0.5f; // Help the clock along.
                 }
 
                 break;
 
         }
-
-
     }
 
     public bool Occupied {
@@ -227,7 +234,11 @@ public class RoadTile {
                 // If we have a road going up, and the other tile has a road going up.
                 if (verticalRoad != null && ((verticalRoad.up_left && directionOfTravel == DirectionOfTravel.Up) || (verticalRoad.down_right && directionOfTravel == DirectionOfTravel.Down))) {
                     if (nextRoadTile.verticalRoad != null && ((nextRoadTile.verticalRoad.up_left && directionOfTravel == DirectionOfTravel.Up) || (nextRoadTile.verticalRoad.down_right && directionOfTravel == DirectionOfTravel.Down))) {
-                        return verticalRoad.cost() + nextRoadTile.verticalRoad.cost();
+                        var upTrafficCost = roadManager.tiles[location.row, location.col].upQueue.Count + roadManager.tiles[nextRoadTile.location.row, nextRoadTile.location.col].upQueue.Count;
+                        var downTrafficCost = roadManager.tiles[location.row, location.col].downQueue.Count + roadManager.tiles[nextRoadTile.location.row, nextRoadTile.location.col].downQueue.Count;
+                        var cost = (directionOfTravel == DirectionOfTravel.Up) ? upTrafficCost : downTrafficCost;
+
+                        return verticalRoad.cost() + nextRoadTile.verticalRoad.cost() + cost;
                     }
                 }
 
@@ -238,7 +249,12 @@ public class RoadTile {
                 // If we have a road going up, and the other tile has a road going up.
                 if (horizontalRoad != null && ((horizontalRoad.up_left && directionOfTravel == DirectionOfTravel.Left) || (horizontalRoad.down_right && directionOfTravel == DirectionOfTravel.Right))) {
                     if (nextRoadTile.horizontalRoad != null && ((nextRoadTile.horizontalRoad.up_left && directionOfTravel == DirectionOfTravel.Left) || (nextRoadTile.horizontalRoad.down_right && directionOfTravel == DirectionOfTravel.Right))) {
-                            return horizontalRoad.cost() + nextRoadTile.horizontalRoad.cost();
+                            
+                        var leftTrafficCost = roadManager.tiles[location.row, location.col].leftQueue.Count + roadManager.tiles[nextRoadTile.location.row, nextRoadTile.location.col].leftQueue.Count;
+                        var rightTrafficCost = roadManager.tiles[location.row, location.col].rightQueue.Count + roadManager.tiles[nextRoadTile.location.row, nextRoadTile.location.col].rightQueue.Count;
+                        var cost = (directionOfTravel == DirectionOfTravel.Left) ? leftTrafficCost : rightTrafficCost;
+
+                        return horizontalRoad.cost() + nextRoadTile.horizontalRoad.cost() + cost;
                     }
                 }
 
@@ -490,9 +506,9 @@ public class RoadManager : MonoBehaviour {
                         foreach (var twiddle4 in twiddles)
                         {
                             makeACarGo(tiles[24 + twiddle1, 16 + twiddle2], tiles[20 + twiddle3, 22 + twiddle4]);
-                            makeACarGo(tiles[20 + twiddle1, 16 + twiddle2], tiles[20 + twiddle3, 18 + twiddle4]);
-                            makeACarGo(tiles[24 + twiddle1, 16 + twiddle2], tiles[19 + twiddle3, 22 + twiddle4]);
-                            makeACarGo(tiles[24 + twiddle1, 16 + twiddle2], tiles[4  + twiddle3, 40 + twiddle4]);
+                            //makeACarGo(tiles[20 + twiddle1, 16 + twiddle2], tiles[20 + twiddle3, 18 + twiddle4]);
+                            //makeACarGo(tiles[24 + twiddle1, 16 + twiddle2], tiles[19 + twiddle3, 22 + twiddle4]);
+                            //makeACarGo(tiles[24 + twiddle1, 16 + twiddle2], tiles[4  + twiddle3, 40 + twiddle4]);
                         }
                     }
                 }
@@ -517,6 +533,10 @@ public class RoadManager : MonoBehaviour {
         carPathfinder.roadManager = gameObject;
         carPathfinder.startTile = start;
         carPathfinder.endTile = end;
+
+        carPathfinder.originalStart = start;
+        carPathfinder.originalEnd = end;
+
         carPathfinder.planAndGo();
     }
 }
