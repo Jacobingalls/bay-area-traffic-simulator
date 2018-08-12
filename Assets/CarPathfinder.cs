@@ -17,8 +17,8 @@ public class CarPathfinder : MonoBehaviour
 
     float refreshTime = 0;
 
-    public Material red, green, blue;
-
+    public Material red, green, blue, yellow;
+    public bool done = false;
     float timeOnRoad = 0.0f;
 
     public void planAndGo() {
@@ -79,7 +79,7 @@ public class CarPathfinder : MonoBehaviour
             }
 
 
-            // gameObject.GetComponent<Renderer>().material = green;
+            gameObject.GetComponent<Renderer>().material = green;
 
             progressOnCurrentSegment += Time.deltaTime * 0.05f * speed;
 
@@ -97,34 +97,29 @@ public class CarPathfinder : MonoBehaviour
             }
 
             // While wating on a light we need to queue up.
-            var maxProgress = (float)(6 - i) / 5.0f;
+            var maxProgress = (float)(6 - i) / 6.0f;
             if (progressOnCurrentSegment > maxProgress) {
                 progressOnCurrentSegment = maxProgress;
-                // gameObject.GetComponent<Renderer>().material = red;
+                gameObject.GetComponent<Renderer>().material = red;
             }
 
             if (progressOnCurrentSegment >= 1) {
-                progressOnCurrentSegment = 0.0f;
-                // gameObject.GetComponent<Renderer>().material = blue;
-
+                gameObject.GetComponent<Renderer>().material = yellow;
                 if (segment + 1 >= path.Count) {
-                    progressOnCurrentSegment = 0f;
+                    
+                    var l = path[segment];
+                    var c = roadManager.GetComponent<RoadManager>().tiles[l.row, l.col];
 
-                    if(current.location.Equals(originalStart.location)) {
-                        startTile = originalEnd;
-                        endTile = originalStart;
-                    } else {
-                        startTile = originalStart;
-                        endTile = originalEnd;
+                    gameObject.GetComponent<MeshRenderer>().enabled = false;
+                    done = true;
+
+                    if(queue != null && queue.Peek().Equals(this)) {
+                        queue.Dequeue(); 
                     }
-
-                    path = null;
-                    planAndGo();
-                    return;
-                } else {
-                    progressOnCurrentSegment = 1.0f;
                 }
+                
 
+                progressOnCurrentSegment = 1.0f;
             }
 
             var previousLoc = path[segment - 1];
@@ -143,8 +138,13 @@ public class CarPathfinder : MonoBehaviour
             //     planAndGo();
             // }
         }
+
+        if (done) {
+            Destroy(gameObject);
+        }
     }
 
+    
 
     public Queue<CarPathfinder> getOurQueue(int seg) {
         if (seg + 1 >= path.Count) { return null; }
