@@ -13,13 +13,14 @@ public class CarPathfinder : MonoBehaviour
     float progressOnCurrentSegment = 0.0f;
     int segment;
     public GameObject roadManager;
-
+    bool needsAMove = false;
 
 
     public void planAndGo() {
         var t = new Thread(() => {
             segment = 1;
             path = startTile.findPathToLocation(endTile.location);
+            needsAMove = true;
         });
         t.Start();
     }
@@ -36,6 +37,11 @@ public class CarPathfinder : MonoBehaviour
 
     private void Update()
     {   
+        if (needsAMove) {
+            move();
+            needsAMove = false;
+        }
+
         if (startTile != null && endTile != null && path != null) {
             if (segment >= path.Count) { return; }
 
@@ -82,7 +88,10 @@ public class CarPathfinder : MonoBehaviour
                     planAndGo();
                     return;
                 } else {
-                    segment++;
+                    //segment++;
+
+                    // Saturate for now, we are waiting for OK from light.
+                    progressOnCurrentSegment = 1.0f;
                 }
 
             }
@@ -98,5 +107,73 @@ public class CarPathfinder : MonoBehaviour
         }
 
 
+    }
+
+
+    public bool canMove() {
+        if (segment + 1 >= path.Count) { return true; }
+
+        if (progressOnCurrentSegment < .8) { return false;}
+
+        var loc = path[segment];
+        var current = roadManager.GetComponent<RoadManager>().tiles[loc.row, loc.col];
+
+        // Going to move up
+        if (path[segment].row > path[segment + 1].row)
+        {
+            return current.getNeighborRoadTile(DirectionOfTravel.Up).upQueue.Count < 5;
+        }
+
+        // Going to move down
+        else if (path[segment].row < path[segment + 1].row)
+        {
+            return current.getNeighborRoadTile(DirectionOfTravel.Down).downQueue.Count < 5;
+        }
+
+        // Going to move left
+        else if (path[segment].col < path[segment + 1].col)
+        {
+            return current.getNeighborRoadTile(DirectionOfTravel.Left).leftQueue.Count < 5;
+        }
+
+        // Going to move right
+        else
+        {
+            return current.getNeighborRoadTile(DirectionOfTravel.Right).rightQueue.Count < 5;
+        }
+    }
+
+    public void move() {
+        if (segment + 1 >= path.Count) { return; }
+
+        var loc = path[segment];
+        var current = roadManager.GetComponent<RoadManager>().tiles[loc.row, loc.col];
+
+        // Going to move up
+        if (path[segment].row > path[segment + 1].row)
+        {
+            current.getNeighborRoadTile(DirectionOfTravel.Up).upQueue.Enqueue(this);
+        }
+
+        // Going to move down
+        else if (path[segment].row < path[segment + 1].row)
+        {
+            current.getNeighborRoadTile(DirectionOfTravel.Down).downQueue.Enqueue(this);
+        }
+
+        // Going to move left
+        else if (path[segment].col < path[segment + 1].col)
+        {
+            current.getNeighborRoadTile(DirectionOfTravel.Left).leftQueue.Enqueue(this);
+        }
+
+        // Going to move right
+        else
+        {
+            current.getNeighborRoadTile(DirectionOfTravel.Right).rightQueue.Enqueue(this);
+        }
+
+        segment++;
+        progressOnCurrentSegment = 0;
     }
 }
