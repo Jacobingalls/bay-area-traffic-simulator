@@ -1,0 +1,32 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7e8aaeff1da7641ba9b2732ced252c34, type: 3}
+  m_Name: TerrainData
+  m_EditorClassIdentifier: 
+  autoUpdate: 1
+  baseColors:
+  - {r: 0.754717, g: 0.59940255, b: 0.20291919, a: 0}
+  - {r: 0.41686133, g: 0.4716981, b: 0.09567462, a: 0}
+  - {r: 0.19324832, g: 0.4528302, b: 0.044855822, a: 0}
+  - {r: 0.3679245, g: 0.24210322, b: 0.18916874, a: 0}
+  - {r: 1, g: 1, b: 1, a: 0}
+  baseStartHeights:
+  - 0
+  - 0.24
+  - 0.45
+  - 0.66
+  - 0.97
+  baseBlendValues:
+  - 0.29
+  - 0.59
+  - 0.44
+  - 0.37
+  - 0.73
