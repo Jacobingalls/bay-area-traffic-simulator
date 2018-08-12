@@ -143,7 +143,8 @@ MonoBehaviour:
   sun: {fileID: 1506881733}
   terrainData: {fileID: 11400000, guid: 16cc0f27aa89a47f8bfdad75bd7a0c05, type: 2}
   roadData: {fileID: 11400000, guid: f9c4362529ada4f8899c1a3411a572b6, type: 2}
-  timeOfDay: 0
+  startingHour: 8
+  startingMinute: 0
   secondsPerDay: 10
 --- !u!4 &218533653
 Transform:
