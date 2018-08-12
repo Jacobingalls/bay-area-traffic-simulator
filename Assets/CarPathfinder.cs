@@ -18,7 +18,7 @@ public class CarPathfinder : MonoBehaviour
     float refreshTime = 0;
 
     public Material red, green, blue, yellow;
-
+    public bool done = false;
 
     public void planAndGo() {
         var t = new Thread(() => {
@@ -103,20 +103,18 @@ public class CarPathfinder : MonoBehaviour
             if (progressOnCurrentSegment >= 1) {
                 gameObject.GetComponent<Renderer>().material = yellow;
                 if (segment + 1 >= path.Count) {
-                    gameObject.GetComponent<Renderer>().material = blue;
-                    queue.Dequeue();
+                    
+                    var l = path[segment];
+                    var c = roadManager.GetComponent<RoadManager>().tiles[l.row, l.col];
 
-                    if(current.location.Equals(originalStart.location)) {
-                        startTile = originalEnd;
-                        endTile = originalStart;
-                    } else {
-                        startTile = originalStart;
-                        endTile = originalEnd;
+                    gameObject.GetComponent<MeshRenderer>().enabled = false;
+                    done = true;
+
+                    if(queue != null && queue.Peek().Equals(this)) {
+                        queue.Dequeue(); 
                     }
-
-                    path = null;
-                    planAndGo();
                 }
+                
 
                 progressOnCurrentSegment = 1.0f;
             }
@@ -137,8 +135,13 @@ public class CarPathfinder : MonoBehaviour
             //     planAndGo();
             // }
         }
+
+        if (done) {
+            Destroy(gameObject);
+        }
     }
 
+    
 
     public Queue<CarPathfinder> getOurQueue(int seg) {
         if (seg + 1 >= path.Count) { return null; }
