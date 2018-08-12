@@ -26,6 +26,18 @@ public class Road {
                 return 5; // Small and invalid
         }
     }
+
+    public float speed() {
+        switch (size)
+        {
+            case Size.Medium:
+                return 3.0f;
+            case Size.Large:
+                return 10.0f;
+            default:
+                return 1.0f; // Small and invalid
+        }
+    }
 }
 
 
@@ -303,26 +315,27 @@ public class RoadManager : MonoBehaviour {
                 var dirA = pxl.r != 0; // Right now everything is all or nothing.
 
                 var up = false;
-                if (row > 0) {
-                    up = data.roadMap.GetPixel(col, row - 1).r > 0;
+                if (row < tiles.GetLength(0))
+                {
+                    up = dirA && data.roadMap.GetPixel(col, row + 1).r > 0;
                 }
 
                 var down = false;
-                if (row < tiles.GetLength(0))
+                if (row > 0)
                 {
-                    down = data.roadMap.GetPixel(col, row + 1).r > 0;
+                    down = dirA && data.roadMap.GetPixel(col, row - 1).r > 0;
                 }
 
                 var left = false;
                 if (col > 0)
                 {
-                    left = data.roadMap.GetPixel(col - 1, row).r > 0;
+                    left = dirA && data.roadMap.GetPixel(col - 1, row).r > 0;
                 }
 
                 var right = false;
                 if (col <= tiles.GetLength(1))
                 {
-                    right = data.roadMap.GetPixel(col + 1, row).r > 0;
+                    right = dirA && data.roadMap.GetPixel(col + 1, row).r > 0;
                 }
 
                 // The red channel allows us to make the vertical more beefy, while the green is horizontal.
@@ -355,12 +368,19 @@ public class RoadManager : MonoBehaviour {
         }
 
         if(data.enableCarSim) {
-            var car = Instantiate(data.carModel);
-            var carPathfinder = car.GetComponent<CarPathfinder>();
-            carPathfinder.roadManager = gameObject;
-            carPathfinder.startTile = tiles[0, 10];
-            carPathfinder.endTile = tiles[10, 20];
-            carPathfinder.planAndGo();
-        }
+            makeACarGo(tiles[24, 16], tiles[20, 22]);
+            makeACarGo(tiles[20, 16], tiles[20, 18]);
+            makeACarGo(tiles[24, 16], tiles[19, 22]);
+            makeACarGo(tiles[24, 16], tiles[4, 40]);
+        } 
+    }
+
+    void makeACarGo(RoadTile start, RoadTile end) {
+        var car = Instantiate(data.carModel);
+        var carPathfinder = car.GetComponent<CarPathfinder>();
+        carPathfinder.roadManager = gameObject;
+        carPathfinder.startTile = start;
+        carPathfinder.endTile = end;
+        carPathfinder.planAndGo();
     }
 }
