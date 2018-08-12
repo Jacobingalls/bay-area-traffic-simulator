@@ -299,30 +299,30 @@ public class RoadManager : MonoBehaviour {
                 }
 
                 // Make the roads.
-                var pxl = tm.terrainData.roadMap.GetPixel(col, row);
+                var pxl = data.roadMap.GetPixel(col, row);
                 var dirA = pxl.r != 0; // Right now everything is all or nothing.
 
                 var up = false;
                 if (row > 0) {
-                    up = tm.terrainData.roadMap.GetPixel(col, row - 1).r > 0;
+                    up = data.roadMap.GetPixel(col, row - 1).r > 0;
                 }
 
                 var down = false;
                 if (row < tiles.GetLength(0))
                 {
-                    up = tm.terrainData.roadMap.GetPixel(col, row + 1).r > 0;
+                    down = data.roadMap.GetPixel(col, row + 1).r > 0;
                 }
 
                 var left = false;
                 if (col > 0)
                 {
-                    up = tm.terrainData.roadMap.GetPixel(col - 1, row).r > 0;
+                    left = data.roadMap.GetPixel(col - 1, row).r > 0;
                 }
 
                 var right = false;
                 if (col <= tiles.GetLength(1))
                 {
-                    up = tm.terrainData.roadMap.GetPixel(col + 1, row).r > 0;
+                    right = data.roadMap.GetPixel(col + 1, row).r > 0;
                 }
 
                 // The red channel allows us to make the vertical more beefy, while the green is horizontal.

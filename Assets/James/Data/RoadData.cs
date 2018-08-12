@@ -7,4 +7,6 @@ public class RoadData : UpdateableData {
     [Header("Road Manager State")]
 	public bool enableCarSim;
 	public GameObject carModel;
+    public Texture2D roadMap;
+
 }
