@@ -21,7 +21,7 @@ GameObject:
   - component: {fileID: 4526854711336618}
   - component: {fileID: 33023249245650066}
   - component: {fileID: 23743389877510966}
-  - component: {fileID: 114606892205054582}
+  - component: {fileID: 114894552874012786}
   m_Layer: 0
   m_Name: Car
   m_TagString: Untagged
@@ -84,7 +84,7 @@ MeshFilter:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1564882776571400}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
---- !u!114 &114606892205054582
+--- !u!114 &114894552874012786
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_CorrespondingSourceObject: {fileID: 0}
@@ -96,3 +96,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   roadManager: {fileID: 0}
+  red: {fileID: 2100000, guid: 4c05f0e1eb41b42c5854389bd474230d, type: 2}
+  green: {fileID: 2100000, guid: 8f04a07d0e5204d869d58ebc5534c36d, type: 2}
+  blue: {fileID: 2100000, guid: 4782ec0d05cab49fe96e22dc2ec8a63c, type: 2}
+  yellow: {fileID: 2100000, guid: c5e93014dff644fba84e606a6f0abe49, type: 2}
+  done: 0
