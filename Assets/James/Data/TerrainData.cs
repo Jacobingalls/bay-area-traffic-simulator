@@ -7,6 +7,8 @@ public class TerrainData : UpdateableData {
     float savedMin;
     float savedMax;
 
+    public Texture2D roadMap;
+
     public Color[] baseColors;
 
     [Range(0, 1)]

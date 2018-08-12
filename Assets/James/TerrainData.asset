@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Name: TerrainData
   m_EditorClassIdentifier: 
   autoUpdate: 1
+  roadMap: {fileID: 2800000, guid: 98401263ee97b4617a963a0b8ba38b51, type: 3}
   baseColors:
   - {r: 0.754717, g: 0.59940255, b: 0.20291919, a: 0}
   - {r: 0.41686133, g: 0.4716981, b: 0.09567462, a: 0}

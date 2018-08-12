@@ -238,6 +238,7 @@ MonoBehaviour:
   terrainMaterial: {fileID: 2100000, guid: 5a10686cd078440a0a33843c2da32d4c, type: 2}
   roadMaterial: {fileID: 2100000, guid: 5063f170e8d4a45bbbf62522850fac8d, type: 2}
   terrainData: {fileID: 11400000, guid: 16cc0f27aa89a47f8bfdad75bd7a0c05, type: 2}
+  carModel: {fileID: 1564882776571400, guid: 5ce25e7a338714158a91b2f59071c017, type: 2}
 --- !u!4 &377940773
 Transform:
   m_ObjectHideFlags: 0
