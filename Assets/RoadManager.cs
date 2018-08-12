@@ -452,15 +452,14 @@ public class RoadManager : MonoBehaviour {
 
                 var pos = new Vector3(col * 4.0f + 2.0f, heights[row * 4, col * 4], row * 4.0f + 2.0f);
                 // var drawDebug = row %  == 0 && col % 3 == 0;
-                var drawDebug = true;
                 if (up || down) {
                     tile.verticalRoad = new Road();
                     tile.verticalRoad.size = (Size) vsize;
                     tile.verticalRoad.up_left = up;
                     tile.verticalRoad.down_right = down;
 
-                    if (up && drawDebug) { Debug.DrawLine(new Vector3(pos.x, pos.y, pos.z), new Vector3(pos.x, pos.y, pos.z + 0.5f), Color.red, 10000.0f); }
-                    if (down && drawDebug) { Debug.DrawLine(new Vector3(pos.x, pos.y, pos.z), new Vector3(pos.x, pos.y, pos.z - 0.5f), Color.black, 10000.0f); }
+                    if (up && data.drawDebug) { Debug.DrawLine(new Vector3(pos.x, pos.y, pos.z), new Vector3(pos.x, pos.y, pos.z + 0.5f), Color.red, 10000.0f); }
+                    if (down && data.drawDebug) { Debug.DrawLine(new Vector3(pos.x, pos.y, pos.z), new Vector3(pos.x, pos.y, pos.z - 0.5f), Color.black, 10000.0f); }
                 }
 
                 if (left || right) {
@@ -469,18 +468,18 @@ public class RoadManager : MonoBehaviour {
                     tile.horizontalRoad.up_left = left;
                     tile.horizontalRoad.down_right = right;
                     
-                    if (left && drawDebug) { Debug.DrawLine(new Vector3(pos.x, pos.y, pos.z), new Vector3(pos.x - 0.5f, pos.y, pos.z), Color.blue, 10000.0f); }
-                    if (right && drawDebug) { Debug.DrawLine(new Vector3(pos.x, pos.y, pos.z), new Vector3(pos.x + 0.5f, pos.y, pos.z), Color.white, 10000.0f); }
+                    if (left && data.drawDebug) { Debug.DrawLine(new Vector3(pos.x, pos.y, pos.z), new Vector3(pos.x - 0.5f, pos.y, pos.z), Color.blue, 10000.0f); }
+                    if (right && data.drawDebug) { Debug.DrawLine(new Vector3(pos.x, pos.y, pos.z), new Vector3(pos.x + 0.5f, pos.y, pos.z), Color.white, 10000.0f); }
                 }
             } 
         }
 
         if(data.enableCarSim) {
             var twiddles = new List<int>();
-            //twiddles.Add(-1);
-            twiddles.Add( 0);
-            //twiddles.Add( 1);
 
+            twiddles.Add(-1);
+            twiddles.Add( 0);
+            twiddles.Add( 1);
 
             foreach (var twiddle1 in twiddles)
             {
@@ -490,9 +489,9 @@ public class RoadManager : MonoBehaviour {
                     {
                         foreach (var twiddle4 in twiddles)
                         {
-                            //makeACarGo(tiles[24 + twiddle1, 16 + twiddle2], tiles[20 + twiddle3, 22 + twiddle4]);
-                            //makeACarGo(tiles[20 + twiddle1, 16 + twiddle2], tiles[20 + twiddle3, 18 + twiddle4]);
-                            //makeACarGo(tiles[24 + twiddle1, 16 + twiddle2], tiles[19 + twiddle3, 22 + twiddle4]);
+                            makeACarGo(tiles[24 + twiddle1, 16 + twiddle2], tiles[20 + twiddle3, 22 + twiddle4]);
+                            makeACarGo(tiles[20 + twiddle1, 16 + twiddle2], tiles[20 + twiddle3, 18 + twiddle4]);
+                            makeACarGo(tiles[24 + twiddle1, 16 + twiddle2], tiles[19 + twiddle3, 22 + twiddle4]);
                             makeACarGo(tiles[24 + twiddle1, 16 + twiddle2], tiles[4  + twiddle3, 40 + twiddle4]);
                         }
                     }

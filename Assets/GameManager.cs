@@ -43,10 +43,30 @@ public class GameManager : MonoBehaviour {
 		}
 	}
 
-	public float timeOfDay = 0.0f; // from 0 to 1
+	public const int HOURS_PER_DAY = 24; 
+	public const int MINUTES_PER_HOUR = 60; 
+
+	[Range(0, HOURS_PER_DAY - 1)]
+	public float startingHour = 8;
+	[Range(0, MINUTES_PER_HOUR - 1)]
+	public float startingMinute = 0;
+	private float timeOfDay = 0.0f; // from 0 to 1
     public float secondsPerDay = 5.0f * 60.0f;
 
 	private float currentTime = 0.0f;
+
+	// returns value between 0 and 1
+	public float GetTimeOfDay() {
+		return timeOfDay;
+	}
+
+	public int GetHour() {
+		return (int)Mathf.Floor(timeOfDay * HOURS_PER_DAY);
+	}
+
+	public int GetMinute() {
+		return (int)Mathf.Floor(((timeOfDay * HOURS_PER_DAY) - GetHour()) * MINUTES_PER_HOUR);
+	}
 
 	void Awake()
 	{
@@ -68,6 +88,8 @@ public class GameManager : MonoBehaviour {
 		_terrainManager.Initialize();
 		_roadManager.Initialize(_terrainManager);
 		_terrainManager.GenerateMeshes(_roadManager);
+
+		currentTime = secondsPerDay * ((startingHour/(float)HOURS_PER_DAY) + ((startingMinute / (float)MINUTES_PER_HOUR) / HOURS_PER_DAY));
 	}
 	
 	void Update () {
