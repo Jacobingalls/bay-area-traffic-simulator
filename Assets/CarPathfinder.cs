@@ -37,6 +37,8 @@ public class CarPathfinder : MonoBehaviour
     private void Update()
     {   
         if (startTile != null && endTile != null && path != null) {
+            if (segment >= path.Count) { return; }
+
             var loc = path[segment];
             var current = roadManager.GetComponent<RoadManager>().tiles[loc.row, loc.col];
 
@@ -51,17 +53,18 @@ public class CarPathfinder : MonoBehaviour
                 dir = DirectionOfTravel.Right;
             }
 
-            var speed = 100.0f;
-            //switch (dir) {
-            //    case DirectionOfTravel.Up:
-            //    case DirectionOfTravel.Down:
-            //        speed = current.verticalRoad.speed();
-            //        break;
-            //    case DirectionOfTravel.Left:
-            //    case DirectionOfTravel.Right:
-            //        speed = current.horizontalRoad.speed();
-            //        break;
-            //}
+            var speed = 1.0f;
+            switch (dir) {
+                case DirectionOfTravel.Up:
+                case DirectionOfTravel.Down:
+                    speed = current.verticalRoad.speed();
+                    break;
+                case DirectionOfTravel.Left:
+                case DirectionOfTravel.Right:
+                    speed = current.horizontalRoad.speed();
+                    break;
+            }
+
 
 
 
@@ -77,6 +80,7 @@ public class CarPathfinder : MonoBehaviour
                     startTile = temp;
                     path = null;
                     planAndGo();
+                    return;
                 } else {
                     segment++;
                 }

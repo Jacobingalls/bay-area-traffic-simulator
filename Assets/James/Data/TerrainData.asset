@@ -19,7 +19,6 @@ MonoBehaviour:
   heightmap: {fileID: 2800000, guid: 2a152a831ce2d4f61920740a04784434, type: 3}
   terrainMaterial: {fileID: 2100000, guid: 5a10686cd078440a0a33843c2da32d4c, type: 2}
   roadMaterial: {fileID: 2100000, guid: 5063f170e8d4a45bbbf62522850fac8d, type: 2}
-  roadMap: {fileID: 2800000, guid: 98401263ee97b4617a963a0b8ba38b51, type: 3}
   baseColors:
   - {r: 0.754717, g: 0.59940255, b: 0.20291919, a: 0}
   - {r: 0.41686133, g: 0.4716981, b: 0.09567462, a: 0}

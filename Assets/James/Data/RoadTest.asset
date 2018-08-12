@@ -13,5 +13,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   autoUpdate: 1
   enableCarSim: 0
+  drawDebug: 0
   carModel: {fileID: 1564882776571400, guid: 5ce25e7a338714158a91b2f59071c017, type: 2}
   roadMap: {fileID: 2800000, guid: 98401263ee97b4617a963a0b8ba38b51, type: 3}
