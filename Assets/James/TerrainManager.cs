@@ -33,7 +33,12 @@ public class RoadOffsets {
 	public Vector3 bottomLeftSouthOffset;
 	public Vector3 bottomRightSouthOffset;
 
-	public RoadOffsets(float roadWidth, float worldSpaceMultiplier) {
+	public Vector2 topLeftUv; 
+	public Vector2 topRightUv; 
+	public Vector2 bottomLeftUv; 
+	public Vector2 bottomRightUv; 
+
+	public RoadOffsets(float roadWidth, float worldSpaceMultiplier, int myRoadTier, int numRoadTiers) {
 		float roadWidthOverTwo = roadWidth / 2.0f;
 
 		topLeftCenterOffset = new Vector3(0.5f - roadWidthOverTwo, 0.0f, 0.5f + roadWidthOverTwo) * worldSpaceMultiplier;
@@ -60,6 +65,11 @@ public class RoadOffsets {
 		topRightSouthOffset = new Vector3(0.5f + roadWidthOverTwo, 0.0f, 0.5f - roadWidthOverTwo) * worldSpaceMultiplier;
 		bottomLeftSouthOffset = new Vector3(0.5f - roadWidthOverTwo, 0.0f, 0.250f) * worldSpaceMultiplier;
 		bottomRightSouthOffset = new Vector3(0.5f + roadWidthOverTwo, 0.0f, 0.250f) * worldSpaceMultiplier;
+
+		topLeftUv = new Vector2((float)myRoadTier / numRoadTiers + 0.01f, ((float)myRoadTier+1) / numRoadTiers - 0.01f);
+		topRightUv = new Vector2(((float)myRoadTier + 1) / numRoadTiers - 0.01f, ((float)myRoadTier + 1) / numRoadTiers - 0.01f);
+		bottomLeftUv = new Vector2((float)myRoadTier / numRoadTiers + 0.01f, (float)myRoadTier / numRoadTiers + 0.01f);
+		bottomRightUv = new Vector2(((float)myRoadTier + 1) / numRoadTiers - 0.01f, (float)myRoadTier / numRoadTiers - 0.01f);
 	}
 }
 
@@ -252,9 +262,9 @@ public class TerrainManager : MonoBehaviour {
 		var southBottomOffset = new Vector3(0.0f, 0.0f, -.250f) * worldSpaceMultiplier;
 
 		RoadOffsets[] offsets = {
-			new RoadOffsets(0.1f, worldSpaceMultiplier),
-			new RoadOffsets(0.15f, worldSpaceMultiplier),
-			new RoadOffsets(0.2f, worldSpaceMultiplier),
+			new RoadOffsets(0.1f, worldSpaceMultiplier, 0, 3), // hardcoded magic numbers. 
+			new RoadOffsets(0.15f, worldSpaceMultiplier, 1, 3), // WHAT ARE YOU GONNA DO ABOUT IT?
+			new RoadOffsets(0.2f, worldSpaceMultiplier, 2, 3), // huh? what? yeah, thought so, chump.
 		};
 
 		Vector3 verticalOffset = Vector3.zero;
@@ -303,6 +313,10 @@ public class TerrainManager : MonoBehaviour {
 				vertices.Add(offsets[roadSizeLargest].topRightCenterOffset + worldSpacePos);
 				vertices.Add(offsets[roadSizeLargest].bottomLeftCenterOffset + worldSpacePos);
 				vertices.Add(offsets[roadSizeLargest].bottomRightCenterOffset + worldSpacePos);
+				uvs.Add(offsets[roadSizeLargest].topLeftUv);
+				uvs.Add(offsets[roadSizeLargest].topRightUv);
+				uvs.Add(offsets[roadSizeLargest].bottomLeftUv);
+				uvs.Add(offsets[roadSizeLargest].bottomRightUv);
 
 				index = addIndices(indices, index);
 				// END Road Center
@@ -329,7 +343,8 @@ public class TerrainManager : MonoBehaviour {
 						indexLookup[tile][(int)DirectionOfTravel.Right] = index;
 						vertices.Add(offsets[roadSizeToUse].topRightEastOffset + worldSpacePos);
 						vertices.Add(offsets[roadSizeToUse].bottomRightEastOffset + worldSpacePos);
-
+						uvs.Add(offsets[roadSizeToUse].topLeftUv);
+						uvs.Add(offsets[roadSizeToUse].bottomLeftUv);
 						center = indexLookup[tile][(int)DirectionOfTravelCenter];
 						indices.Add(center + 1);
 						indices.Add(index + 0);
@@ -355,7 +370,8 @@ public class TerrainManager : MonoBehaviour {
 						indexLookup[tile][(int)DirectionOfTravel.Left] = index;
 						vertices.Add(offsets[roadSizeToUse].topLeftWestOffset + worldSpacePos);
 						vertices.Add(offsets[roadSizeToUse].bottomLeftWestOffset + worldSpacePos);
-
+						uvs.Add(offsets[roadSizeToUse].topRightUv);
+						uvs.Add(offsets[roadSizeToUse].bottomRightUv);
 						center = indexLookup[tile][(int)DirectionOfTravelCenter];
 						indices.Add(index + 0);
 						indices.Add(center + 0);
@@ -382,7 +398,8 @@ public class TerrainManager : MonoBehaviour {
 						indexLookup[tile][(int)DirectionOfTravel.Up] = index;
 						vertices.Add(offsets[roadSizeToUse].topLeftNorthOffset + worldSpacePos);
 						vertices.Add(offsets[roadSizeToUse].topRightNorthOffset + worldSpacePos);
-
+						uvs.Add(offsets[roadSizeToUse].bottomLeftUv);
+						uvs.Add(offsets[roadSizeToUse].bottomRightUv);
 						center = indexLookup[tile][(int)DirectionOfTravelCenter];
 						indices.Add(index + 0);
 						indices.Add(index + 1);
@@ -408,7 +425,8 @@ public class TerrainManager : MonoBehaviour {
 						indexLookup[tile][(int)DirectionOfTravel.Down] = index;
 						vertices.Add(offsets[roadSizeToUse].bottomLeftSouthOffset + worldSpacePos);
 						vertices.Add(offsets[roadSizeToUse].bottomRightSouthOffset + worldSpacePos);
-
+						uvs.Add(offsets[roadSizeToUse].topLeftUv);
+						uvs.Add(offsets[roadSizeToUse].bottomRightUv);
 						center = indexLookup[tile][(int)DirectionOfTravelCenter];
 						indices.Add(center + 2);
 						indices.Add(center + 3);
@@ -484,6 +502,8 @@ public class TerrainManager : MonoBehaviour {
 
 						vertices.Add(offsets[roadSizeToUse].topRightEastOffset + worldSpacePos + eastRightOffset + verticalOffset);
 						vertices.Add(offsets[roadSizeToUse].bottomRightEastOffset + worldSpacePos + eastRightOffset + verticalOffset);
+						uvs.Add(offsets[roadSizeToUse].topLeftUv);
+						uvs.Add(offsets[roadSizeToUse].bottomLeftUv);
 						indices.Add(myIndex + 0);
 						indices.Add(index + 0);
 						indices.Add(myIndex + 1);
@@ -545,6 +565,8 @@ public class TerrainManager : MonoBehaviour {
 
 						vertices.Add(offsets[roadSizeToUse].topLeftNorthOffset + worldSpacePos + northTopOffset + verticalOffset);
 						vertices.Add(offsets[roadSizeToUse].topRightNorthOffset + worldSpacePos + northTopOffset + verticalOffset);
+						uvs.Add(offsets[roadSizeToUse].topLeftUv);
+						uvs.Add(offsets[roadSizeToUse].topRightUv);
 						indices.Add(index + 0);
 						indices.Add(index + 1);
 						indices.Add(myIndex + 0);
