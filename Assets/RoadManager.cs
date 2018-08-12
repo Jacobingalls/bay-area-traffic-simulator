@@ -62,6 +62,111 @@ public class RoadTile {
     public TitleType type;
     public Density density;
 
+    public Queue<CarPathfinder> upQueue, downQueue, leftQueue, rightQueue;
+    DirectionOfTravel phase = DirectionOfTravel.Up;
+
+    float totalSeconds = 5.0f;
+    float currentSeconds = 0.0f;
+
+    public RoadTile() {
+        upQueue = new Queue<CarPathfinder>();
+        downQueue = new Queue<CarPathfinder>();
+        leftQueue = new Queue<CarPathfinder>();
+        rightQueue = new Queue<CarPathfinder>();
+    }
+
+    public void update(float timedelta) {
+
+        // Exit early if we are not actually a traffic light.
+        if (horizontalRoad == null) {
+            phase = DirectionOfTravel.Left;
+        } else if (verticalRoad == null) {
+            phase = DirectionOfTravel.Up;
+        }
+
+        // Check to see if we need to change the light.
+        currentSeconds += timedelta;
+        if (currentSeconds > totalSeconds) {
+            currentSeconds = 0;
+            phase = (DirectionOfTravel) (((byte)phase + 1) % 4);
+        }
+
+
+        // Debug.
+        var a = new Vector3(location.col * 4 + 2, 8, location.row * 4 + 2);
+        var b = new Vector3(location.col * 4 + 2, 8, location.row * 4 + 3);
+                
+        switch (phase) {
+            case DirectionOfTravel.Up:
+                Debug.DrawLine(a, b, Color.magenta, 0.5f);
+
+                if (upQueue.Count > 0) {
+                    if (upQueue.Peek().canMove()) {
+                        upQueue.Peek().move();
+                        upQueue.Dequeue();
+                    }
+                } else {
+                    currentSeconds += 0.5f; // Help the clock along.
+                }
+
+                break;
+            case DirectionOfTravel.Down:
+                a = new Vector3(location.col * 4 + 2, 8, location.row * 4 + 2);
+                b = new Vector3(location.col * 4 + 2, 8, location.row * 4 + 1);
+                Debug.DrawLine(a, b, Color.magenta, 0.5f);
+
+                if (downQueue.Count > 0) {
+                    if (downQueue.Peek().canMove())
+                    {
+                        downQueue.Peek().move();
+                        downQueue.Dequeue();
+                    }
+                }
+                else {
+                    currentSeconds += 0.5f; // Help the clock along.
+                }
+
+                break;
+            case DirectionOfTravel.Left:
+                a = new Vector3(location.col * 4 + 1, 8, location.row * 4 + 2);
+                b = new Vector3(location.col * 4 + 2, 8, location.row * 4 + 2);
+                Debug.DrawLine(a, b, Color.magenta, 0.5f);
+
+                if (leftQueue.Count > 0) {
+                    if (leftQueue.Peek().canMove())
+                    {
+                        leftQueue.Peek().move();
+                        leftQueue.Dequeue();
+                    }
+                }
+                else {
+                    currentSeconds += 0.5f; // Help the clock along.
+                }
+
+                break;
+            case DirectionOfTravel.Right:
+                a = new Vector3(location.col * 4 + 3, 8, location.row * 4 + 2);
+                b = new Vector3(location.col * 4 + 2, 8, location.row * 4 + 2);
+                Debug.DrawLine(a, b, Color.magenta, 0.5f);
+
+                if (rightQueue.Count > 0) {
+                    if (rightQueue.Peek().canMove())
+                    {
+                        rightQueue.Peek().move();
+                        rightQueue.Dequeue();
+                    }
+                }
+                else {
+                    currentSeconds += 0.5f; // Help the clock along.
+                }
+
+                break;
+
+        }
+
+
+    }
+
     public bool Occupied {
         get {
             return verticalRoad != null || horizontalRoad != null;
@@ -372,9 +477,9 @@ public class RoadManager : MonoBehaviour {
 
         if(data.enableCarSim) {
             var twiddles = new List<int>();
-            twiddles.Add(-1);
+            //twiddles.Add(-1);
             twiddles.Add( 0);
-            twiddles.Add( 1);
+            //twiddles.Add( 1);
 
 
             foreach (var twiddle1 in twiddles)
@@ -385,9 +490,9 @@ public class RoadManager : MonoBehaviour {
                     {
                         foreach (var twiddle4 in twiddles)
                         {
-                            makeACarGo(tiles[24 + twiddle1, 16 + twiddle2], tiles[20 + twiddle3, 22 + twiddle4]);
-                            makeACarGo(tiles[20 + twiddle1, 16 + twiddle2], tiles[20 + twiddle3, 18 + twiddle4]);
-                            makeACarGo(tiles[24 + twiddle1, 16 + twiddle2], tiles[19 + twiddle3, 22 + twiddle4]);
+                            //makeACarGo(tiles[24 + twiddle1, 16 + twiddle2], tiles[20 + twiddle3, 22 + twiddle4]);
+                            //makeACarGo(tiles[20 + twiddle1, 16 + twiddle2], tiles[20 + twiddle3, 18 + twiddle4]);
+                            //makeACarGo(tiles[24 + twiddle1, 16 + twiddle2], tiles[19 + twiddle3, 22 + twiddle4]);
                             makeACarGo(tiles[24 + twiddle1, 16 + twiddle2], tiles[4  + twiddle3, 40 + twiddle4]);
                         }
                     }
@@ -396,7 +501,18 @@ public class RoadManager : MonoBehaviour {
         } 
     }
 
-    void makeACarGo(RoadTile start, RoadTile end) {
+	private void Update()
+	{
+        for (int row = 0; row < tiles.GetLength(0); row++)
+        {
+            for (int col = 0; col < tiles.GetLength(1); col++)
+            {
+                tiles[row, col].update(Time.deltaTime);
+            }
+        }
+	}
+
+	void makeACarGo(RoadTile start, RoadTile end) {
         var car = Instantiate(data.carModel);
         var carPathfinder = car.GetComponent<CarPathfinder>();
         carPathfinder.roadManager = gameObject;
