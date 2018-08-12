@@ -30,25 +30,24 @@ public class CarPathfinder : MonoBehaviour
 
     private void drawDebugLines() {
         var rm = roadManager.GetComponent<RoadManager>();
-        var linePos = new Vector3(startTile.transform.position.x, 2, startTile.transform.position.z);
+        var linePos = new Vector3(startTile.location.row * 4, 2, startTile.location.col * 4);
         if (path != null)
         {
             foreach (var loc in path)
             {
-                var positionOfTile = rm.tiles[loc.row, loc.col].transform.position;
-                var newLinePos = new Vector3(positionOfTile.x, 2, positionOfTile.z);
+                var newLinePos = new Vector3(loc.row * 4, 2, loc.col * 4);
                 Debug.DrawLine(linePos, newLinePos, Color.white, 100);
                 linePos = newLinePos;
             }
         }
 
-        var startPostition = startTile.transform.position;
-        Debug.DrawLine(new Vector3(startPostition.x - 0.5f, 2, startPostition.z - 0.5f), new Vector3(startPostition.x + 0.5f, 2, startPostition.z + 0.5f), Color.green, 100);
-        Debug.DrawLine(new Vector3(startPostition.x + 0.5f, 2, startPostition.z - 0.5f), new Vector3(startPostition.x - 0.5f, 2, startPostition.z + 0.5f), Color.green, 100);
+        var startPostition = new Vector3(startTile.location.row * 4, 2, startTile.location.col * 4);
+        Debug.DrawLine(new Vector3(startPostition.x * 4 - 2f, 2, startPostition.z * 4 - 2f), new Vector3(startPostition.x * 4 + 2f, 2, startPostition.z * 4 + 2f), Color.green, 100);
+        Debug.DrawLine(new Vector3(startPostition.x * 4 + 2f, 2, startPostition.z * 4 - 2f), new Vector3(startPostition.x * 4 - 2f, 2, startPostition.z * 4 + 2f), Color.green, 100);
 
-        var endPosition = endTile.transform.position;
-        Debug.DrawLine(new Vector3(endPosition.x - 0.5f, 2, endPosition.z - 0.5f), new Vector3(endPosition.x + 0.5f, 2, endPosition.z + 0.5f), Color.red, 100);
-        Debug.DrawLine(new Vector3(endPosition.x + 0.5f, 2, endPosition.z - 0.5f), new Vector3(endPosition.x - 0.5f, 2, endPosition.z + 0.5f), Color.red, 100);
+        var endPosition = new Vector3(endTile.location.row, 2, endTile.location.col);
+        Debug.DrawLine(new Vector3(endPosition.x * 4 - 2f, 2, endPosition.z * 4 - 2f), new Vector3(endPosition.x * 4 + 2f, 2, endPosition.z * 4 + 2f), Color.red, 100);
+        Debug.DrawLine(new Vector3(endPosition.x * 4 + 2f, 2, endPosition.z * 4 - 2f), new Vector3(endPosition.x * 4- 2f, 2, endPosition.z * 4 + 2f), Color.red, 100);
     }
 
     private void Update()
@@ -58,7 +57,7 @@ public class CarPathfinder : MonoBehaviour
         if (startTile == null) {
             startTile = rm.tiles[rnd.Next() % 100, rnd.Next() % 100];
             endTile = startTile;
-            gameObject.transform.position = new Vector3(startTile.transform.position.x, 3, startTile.transform.position.z);
+            gameObject.transform.position = new Vector3(startTile.location.row * 4, 2, startTile.location.col * 4);
         }
 
         //drawDebugLines();
@@ -86,11 +85,8 @@ public class CarPathfinder : MonoBehaviour
             var previousLoc = path[segment - 1];
             var nextLoc = path[segment];
 
-            var previousPosition = rm.tiles[previousLoc.row, previousLoc.col].transform.position;
-            var nextPosition = rm.tiles[nextLoc.row, nextLoc.col].transform.position;
-
             // Lets do a spline!
-            var realPos = Vector3.Lerp(new Vector3(previousPosition.x, 3, previousPosition.z), new Vector3(nextPosition.x, 3, nextPosition.z), progressOnCurrentSegment);
+            var realPos = Vector3.Lerp(new Vector3(previousLoc.row * 4, 3, previousLoc.col * 4), new Vector3(nextLoc.row * 4, 3, nextLoc.col * 4), progressOnCurrentSegment);
             gameObject.transform.position = realPos;
         }
 

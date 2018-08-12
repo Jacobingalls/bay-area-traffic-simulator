@@ -268,11 +268,6 @@ public class PriorityQueue<T>
 
 public class RoadManager : MonoBehaviour {
 
-    public GameObject prefab;
-    public GameObject carModel;
-
-    public Material roadColor, pathUsed, pathConsidered, pathStart, pathEnd;
-
     public RoadTile[,] tiles = new RoadTile[75, 50]; // row, col
 
 	// Use this for initialization
@@ -335,6 +330,11 @@ public class RoadManager : MonoBehaviour {
                     if (right && drawDebug) { Debug.DrawLine(new Vector3(pos.x, pos.y, pos.z), new Vector3(pos.x + 0.5f, pos.y, pos.z), Color.white, 10000.0f); }
                 }
             } 
+        }
+
+        for (var i = 0; i < 100; i ++) {
+            var car = Instantiate(tm.carModel);
+            car.GetComponent<CarPathfinder>().roadManager = gameObject;
         }
     }
 }

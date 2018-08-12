@@ -24,6 +24,7 @@ public class TerrainManager : MonoBehaviour {
 	public Material terrainMaterial;
 	public Material roadMaterial;
 	public TerrainData terrainData;
+    public GameObject carModel;
 
 	private int[,] heights;
 
