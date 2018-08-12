@@ -6,8 +6,14 @@ using UnityEngine.UI;
 public class GUIManager : MonoBehaviour {
 
 	public Text timeOfDayText;
+	public CarDetailView selectedCarDetailView;
 
 	private GameManager gameManager;
+
+	private GameObject selectedObject;
+
+	private RectTransform selectedObjectUIElement;
+
 
 	// Use this for initialization
 	void Start () {
@@ -23,5 +29,41 @@ public class GUIManager : MonoBehaviour {
 			ampmString = "pm";
 		}
 		timeOfDayText.text = string.Format("{0}:{1}{2}", hour.ToString("D2"), gameManager.GetMinute().ToString("D2"), ampmString);
+	
+		if (selectedObject == null) {
+			selectedObject = null;
+			if(selectedObjectUIElement != null) {
+				selectedObjectUIElement.gameObject.SetActive(false);
+				selectedObjectUIElement = null;
+			}
+		}
+	}
+
+	private void ChangeSelectedObject(GameObject newSelectedObject, RectTransform newUIElement) {
+		if(selectedObjectUIElement != null) {
+			selectedObjectUIElement.gameObject.SetActive(false);
+		}
+
+		selectedObject = newSelectedObject;
+		selectedObjectUIElement = newUIElement;
+
+		if(selectedObjectUIElement != null) {
+			selectedObjectUIElement.gameObject.SetActive(true);
+		}
+	}
+
+	public void SelectNone() {
+		selectedObject = null;
+		selectedObjectUIElement.gameObject.SetActive(false);
+		selectedObjectUIElement = null;
+	}
+
+	public void SelectCar(CarPathfinder car) {
+		if (selectedObject == car.gameObject) {
+			return;
+		}
+
+		selectedCarDetailView.activeCar = car;
+		ChangeSelectedObject(car.gameObject, selectedCarDetailView.GetComponent<RectTransform>());
 	}
 }

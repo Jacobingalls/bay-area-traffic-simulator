@@ -19,6 +19,7 @@ public class CarPathfinder : MonoBehaviour
 
     public Material red, green, blue;
 
+    float timeOnRoad = 0.0f;
 
     public void planAndGo() {
         var t = new Thread(() => {
@@ -41,6 +42,8 @@ public class CarPathfinder : MonoBehaviour
 
     private void Update()
     {   
+        timeOnRoad += Time.deltaTime;
+
         if (needsAMove) {
             move();
             needsAMove = false;
@@ -207,5 +210,21 @@ public class CarPathfinder : MonoBehaviour
 
         segment++;
         progressOnCurrentSegment = 0;
+    }
+
+    public List<Location> GetPath() {
+        return path;
+    }
+
+    public Location GetCurrentLocation() {
+        return path[segment];
+    }
+
+    public TimePeriod GetTimeOnRoad() {
+        return null;
+    }
+
+    public void OnLeftClick() {
+        GameManager.GUIManagerInstance.SelectCar(this);
     }
 }

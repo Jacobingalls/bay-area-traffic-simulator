@@ -344,6 +344,9 @@ public struct Location {
     public int row;
     public int col;
 
+    public override String ToString() {
+        return String.Format("{0}, {1}", row, col);
+    }
 }
 
 public struct FakeTuple<M, N> {
