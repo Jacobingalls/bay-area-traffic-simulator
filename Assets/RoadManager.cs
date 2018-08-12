@@ -342,8 +342,8 @@ public class RoadManager : MonoBehaviour {
                 var r = (int)(pxl.r * 255);
                 var g = (int)(pxl.g * 255);
 
-                var vsize = (r >= 128) ? (r / 64) - 1 : 0;
-                var hsize = (g >= 128) ? (g / 64) - 1 : 0;
+                var vsize = (r - 63) / 64 - 1;
+                var hsize = (g - 63) / 64 - 1;
 
                 var pos = new Vector3(col * 4.0f + 2.0f, heights[row * 4, col * 4], row * 4.0f + 2.0f);
                 // var drawDebug = row %  == 0 && col % 3 == 0;

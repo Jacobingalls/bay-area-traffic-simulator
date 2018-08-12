@@ -233,16 +233,16 @@ public class TerrainManager : MonoBehaviour {
 		var roadWidth = 0.40f;
 		var roadWidthOverTwo = roadWidth / 2.0f;
 		// roads own their top and right corners for sloping behavior
-
+   
 		var northTopOffset = new Vector3(0.0f, 0.0f, .250f) * worldSpaceMultiplier;
 		var eastRightOffset = new Vector3(0.250f, 0.0f, 0.0f) * worldSpaceMultiplier;
 		var westLeftOffset = new Vector3(-0.250f, 0.0f, 0.0f) * worldSpaceMultiplier;
 		var southBottomOffset = new Vector3(0.0f, 0.0f, -.250f) * worldSpaceMultiplier;
 
 		RoadOffsets[] offsets = {
-			new RoadOffsets(0.100f, worldSpaceMultiplier),
-			new RoadOffsets(0.175f, worldSpaceMultiplier),
-			new RoadOffsets(0.250f, worldSpaceMultiplier),
+			new RoadOffsets(0.1f, worldSpaceMultiplier),
+			new RoadOffsets(0.15f, worldSpaceMultiplier),
+			new RoadOffsets(0.2f, worldSpaceMultiplier),
 		};
 
 		Vector3 verticalOffset = Vector3.zero;
@@ -277,12 +277,6 @@ public class TerrainManager : MonoBehaviour {
 				var worldZ = row * worldSpaceMultiplier;
 
 				var worldSpacePos = new Vector3(worldX, worldY, worldZ);
-
-				if(tile.horizontalRoad != null)
-				Debug.Log(tile.horizontalRoad.size);
-
-				if(tile.verticalRoad != null)
-				Debug.Log(tile.verticalRoad.size);
 
 				var roadSizeHorizontal = tile.horizontalRoad != null ? (int)tile.horizontalRoad.size : -1;
 				var roadSizeVertical = tile.verticalRoad != null ? (int)tile.verticalRoad.size : -1;
