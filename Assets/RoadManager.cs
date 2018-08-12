@@ -354,21 +354,13 @@ public class RoadManager : MonoBehaviour {
             } 
         }
 
-<<<<<<< HEAD
         if(data.enableCarSim) {
-            for (var i = 0; i < 100; i ++) {
-                var car = Instantiate(data.carModel);
-                car.GetComponent<CarPathfinder>().roadManager = gameObject;
-            }
+            var car = Instantiate(data.carModel);
+            var carPathfinder = car.GetComponent<CarPathfinder>();
+            carPathfinder.roadManager = gameObject;
+            carPathfinder.startTile = tiles[0, 10];
+            carPathfinder.endTile = tiles[10, 20];
+            carPathfinder.planAndGo();
         }
-
-=======
-        var car = Instantiate(tm.carModel);
-        var carPathfinder = car.GetComponent<CarPathfinder>();
-        carPathfinder.roadManager = gameObject;
-        carPathfinder.startTile = tiles[0, 10];
-        carPathfinder.endTile = tiles[10, 20];
-        carPathfinder.planAndGo();
->>>>>>> origin/feature/cars
     }
 }
