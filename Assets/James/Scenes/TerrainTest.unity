@@ -123,6 +123,7 @@ GameObject:
   - component: {fileID: 267251542}
   - component: {fileID: 267251541}
   - component: {fileID: 267251540}
+  - component: {fileID: 267251543}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -190,6 +191,17 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &267251543
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 267251539}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 95a5e428459dd4af78b4d0491af414f9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &377940771
 GameObject:
   m_ObjectHideFlags: 0
@@ -224,6 +236,7 @@ MonoBehaviour:
   heightmap: {fileID: 2800000, guid: 2a152a831ce2d4f61920740a04784434, type: 3}
   tilePrefab: {fileID: 1115524271548920, guid: 48a3f1c434122472e9d63329df1b8e23, type: 2}
   terrainMaterial: {fileID: 2100000, guid: 5a10686cd078440a0a33843c2da32d4c, type: 2}
+  roadMaterial: {fileID: 2100000, guid: 5063f170e8d4a45bbbf62522850fac8d, type: 2}
   terrainData: {fileID: 11400000, guid: 16cc0f27aa89a47f8bfdad75bd7a0c05, type: 2}
 --- !u!4 &377940773
 Transform:

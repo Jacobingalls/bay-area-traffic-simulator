@@ -31,7 +31,7 @@ public class Road {
 public enum DirectionOfTravel: byte {Up, Down, Left, Right}
 
 // Tile is a cell on the game board. Roads interconnect tiles
-public class RoadTile : MonoBehaviour {
+public class RoadTile {
     public RoadManager roadManager;
 
     // Where it is on the map
@@ -49,24 +49,11 @@ public class RoadTile : MonoBehaviour {
     public TitleType type;
     public Density density;
 
-
-	public void Update() {
-        var pos = gameObject.transform.position;
-                            
-        //// Vertical Road Debug
-        //if (verticalRoad != null) {
-            
-        //    if (verticalRoad.up_left) { Debug.DrawLine(new Vector3(pos.x, pos.y + 1, pos.z), new Vector3(pos.x, pos.y + 1, pos.z - 0.5f), Color.red); }
-        //    if (verticalRoad.down_right) { Debug.DrawLine(new Vector3(pos.x, pos.y + 1, pos.z), new Vector3(pos.x, pos.y + 1, pos.z + 0.5f), Color.black); }
-        //}
-
-        //// Horizontal Road Debug
-        //if (horizontalRoad != null)
-        //{
-        //    if (horizontalRoad.up_left) { Debug.DrawLine(new Vector3(pos.x, pos.y + 1, pos.z), new Vector3(pos.x - 0.5f, pos.y + 1, pos.z), Color.blue); }
-        //    if (horizontalRoad.down_right) { Debug.DrawLine(new Vector3(pos.x, pos.y + 1, pos.z), new Vector3(pos.x + 0.5f, pos.y + 1, pos.z), Color.white); }
-        //}
-	}
+    public bool Occupied {
+        get {
+            return verticalRoad != null || horizontalRoad != null;
+        }
+    }
 
     public List<DirectionOfTravel> getNeighbors() {
         var list = new List<DirectionOfTravel>();
@@ -286,24 +273,38 @@ public class RoadManager : MonoBehaviour {
 
 
 
-    public RoadTile[,] tiles = new RoadTile[100, 100]; // row, col
+    // public RoadTile[,] tiles = new RoadTile[100, 100]; // row, col
+    public RoadTile[,] tiles = new RoadTile[75, 50]; // row, col
 
     System.Random rnd = new System.Random();
 
 	// Use this for initialization
     void Start () {
+    
+	}
+
+    public void Initialize(TerrainManager tm) {
+        var heights = tm.GetHeights();
+
         for (int row = 0; row < tiles.GetLength(0); row ++) {
             for (int col = 0; col < tiles.GetLength(1); col++)
             {
-                var go = Instantiate(prefab);
-                go.transform.position = new Vector3(row, 0.0f, col);
+                // var go = Instantiate(prefab);
+                // go.transform.position = new Vector3(row, 0.0f, col);
 
                 // Make the road tile
-                var tile = go.AddComponent<RoadTile>();
+                var tile = new RoadTile();
                 tile.location = new Location();
                 tile.location.col = col;
                 tile.location.row = row;
                 tile.roadManager = this;
+
+                // Put the tile int the array
+                tiles[row, col] = tile;
+
+                if(heights[row * 4, col * 4] == 0) {
+                    continue;
+                } 
 
                 // Make the roads. Right now, lets randomly seed
 
@@ -314,74 +315,78 @@ public class RoadManager : MonoBehaviour {
                 var vsize = (rnd.Next() % 3) + 1;
                 var hsize = (rnd.Next() % 3) + 1;
 
+                var pos = new Vector3(col * 4.0f + 2.0f, heights[row * 4, col * 4] * tm.yScale, row * 4.0f + 2.0f);
+                // var drawDebug = row %  == 0 && col % 3 == 0;
+                var drawDebug = true;
                 if (up || down) {
                     tile.verticalRoad = new Road();
                     tile.verticalRoad.size = (Size) vsize;
                     tile.verticalRoad.up_left = up;
                     tile.verticalRoad.down_right = down;
+
+                    if (up && drawDebug) { Debug.DrawLine(new Vector3(pos.x, pos.y, pos.z), new Vector3(pos.x, pos.y, pos.z + 0.5f), Color.red, 10000.0f); }
+                    if (down && drawDebug) { Debug.DrawLine(new Vector3(pos.x, pos.y, pos.z), new Vector3(pos.x, pos.y, pos.z - 0.5f), Color.black, 10000.0f); }
                 }
 
                 if (left || right) {
                     tile.horizontalRoad = new Road();
                     tile.horizontalRoad.size = (Size) hsize;
-                    tile.horizontalRoad.up_left = up;
-                    tile.horizontalRoad.down_right = down;
+                    tile.horizontalRoad.up_left = left;
+                    tile.horizontalRoad.down_right = right;
+                    
+                    if (left && drawDebug) { Debug.DrawLine(new Vector3(pos.x, pos.y, pos.z), new Vector3(pos.x - 0.5f, pos.y, pos.z), Color.blue, 10000.0f); }
+                    if (right && drawDebug) { Debug.DrawLine(new Vector3(pos.x, pos.y, pos.z), new Vector3(pos.x + 0.5f, pos.y, pos.z), Color.white, 10000.0f); }
                 }
-
-
-                // Put the tile int the array
-                tiles[row, col] = tile;
             } 
         }
-
-	}
+    }
 
     double i = 0;
 
 	// Update is called once per frame
-	void Update () {
-        i += Time.deltaTime;
+	// void Update () {
+    //     i += Time.deltaTime;
 
-        if (i > 1)
-        {
-            i = 0;
-            print("Starting...");
+    //     if (i > 1)
+    //     {
+    //         i = 0;
+    //         print("Starting...");
 
-            // Reset all the tiles back to gray.
-            for (int row = 0; row < tiles.GetLength(0); row++)
-            {
-                for (int col = 0; col < tiles.GetLength(1); col++)
-                {
-                    tiles[row, col].gameObject.GetComponent<Renderer>().material = roadColor;
-                }
-            }
+    //         // Reset all the tiles back to gray.
+    //         for (int row = 0; row < tiles.GetLength(0); row++)
+    //         {
+    //             for (int col = 0; col < tiles.GetLength(1); col++)
+    //             {
+    //                 tiles[row, col].gameObject.GetComponent<Renderer>().material = roadColor;
+    //             }
+    //         }
 
 
 
-            // We now want to check the algo
-            var startTile = tiles[10, 10];
-            var endTile = tiles[rnd.Next() % 100, rnd.Next() % 100];
+    //         // We now want to check the algo
+    //         var startTile = tiles[10, 10];
+    //         var endTile = tiles[rnd.Next() % 100, rnd.Next() % 100];
 
-            var path = startTile.findPathToLocation(endTile.location);
-            if (path != null)
-            {
-                print("Path:");
-                print(path.Count);
-                foreach (var loc in path)
-                {
-                    tiles[loc.row, loc.col].gameObject.GetComponent<Renderer>().material = pathUsed;
-                }
-            }
-            else
-            {
-                print("Path was null.");
-            }
+    //         var path = startTile.findPathToLocation(endTile.location);
+    //         if (path != null)
+    //         {
+    //             print("Path:");
+    //             print(path.Count);
+    //             foreach (var loc in path)
+    //             {
+    //                 tiles[loc.row, loc.col].gameObject.GetComponent<Renderer>().material = pathUsed;
+    //             }
+    //         }
+    //         else
+    //         {
+    //             print("Path was null.");
+    //         }
 
-            startTile.gameObject.GetComponent<Renderer>().material = pathStart;
-            endTile.gameObject.GetComponent<Renderer>().material = pathEnd;
+    //         startTile.gameObject.GetComponent<Renderer>().material = pathStart;
+    //         endTile.gameObject.GetComponent<Renderer>().material = pathEnd;
 
-            i = 0;
-        }
+    //         i = 0;
+    //     }
 
-	}
+	// }
 }
