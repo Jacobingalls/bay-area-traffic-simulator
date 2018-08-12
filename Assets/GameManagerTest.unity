@@ -214,7 +214,7 @@ MonoBehaviour:
   roadData: {fileID: 11400000, guid: f9c4362529ada4f8899c1a3411a572b6, type: 2}
   startingHour: 8
   startingMinute: 0
-  secondsPerDay: 300
+  secondsPerDay: 120
 --- !u!4 &218533653
 Transform:
   m_ObjectHideFlags: 0
@@ -584,13 +584,13 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1589930042}
-  m_LocalRotation: {x: 0.46193978, y: 0.33141357, z: -0.19134171, w: 0.8001032}
-  m_LocalPosition: {x: 0, y: 45, z: -10}
+  m_LocalRotation: {x: 0.46193978, y: -0.33141357, z: 0.19134171, w: 0.8001032}
+  m_LocalPosition: {x: 100, y: 45, z: 85}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 60, y: 45, z: 0}
+  m_LocalEulerAnglesHint: {x: 60, y: -45, z: 0}
 --- !u!114 &1589930046
 MonoBehaviour:
   m_ObjectHideFlags: 0

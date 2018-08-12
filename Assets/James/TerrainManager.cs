@@ -7,6 +7,62 @@ public enum TileType {
 	Grass
 }
 
+public class RoadOffsets {
+	public Vector3 topLeftCenterOffset;
+	public Vector3 topRightCenterOffset;
+	public Vector3 bottomLeftCenterOffset;
+	public Vector3 bottomRightCenterOffset;
+
+	public Vector3 topLeftWestOffset;
+	public Vector3 topRightWestOffset;
+	public Vector3 bottomLeftWestOffset;
+	public Vector3 bottomRightWestOffset;
+
+	public Vector3 topLeftEastOffset;
+	public Vector3 topRightEastOffset;
+	public Vector3 bottomLeftEastOffset;
+	public Vector3 bottomRightEastOffset;
+
+	public Vector3 topLeftNorthOffset;
+	public Vector3 topRightNorthOffset;
+	public Vector3 bottomLeftNorthOffset;
+	public Vector3 bottomRightNorthOffset;
+
+	public Vector3 topLeftSouthOffset;
+	public Vector3 topRightSouthOffset;
+	public Vector3 bottomLeftSouthOffset;
+	public Vector3 bottomRightSouthOffset;
+
+	public RoadOffsets(float roadWidth, float worldSpaceMultiplier) {
+		float roadWidthOverTwo = roadWidth / 2.0f;
+
+		topLeftCenterOffset = new Vector3(0.5f - roadWidthOverTwo, 0.0f, 0.5f + roadWidthOverTwo) * worldSpaceMultiplier;
+		topRightCenterOffset = new Vector3(0.5f + roadWidthOverTwo, 0.0f, 0.5f + roadWidthOverTwo) * worldSpaceMultiplier;
+		bottomLeftCenterOffset = new Vector3(0.5f - roadWidthOverTwo, 0.0f, 0.5f - roadWidthOverTwo) * worldSpaceMultiplier;
+		bottomRightCenterOffset = new Vector3(0.5f + roadWidthOverTwo, 0.0f, 0.5f - roadWidthOverTwo) * worldSpaceMultiplier;
+
+		topLeftWestOffset = new Vector3(0.250f, 0.0f, 0.5f + roadWidthOverTwo) * worldSpaceMultiplier;
+		topRightWestOffset = new Vector3(0.5f - roadWidthOverTwo, 0.0f, 0.5f + roadWidthOverTwo) * worldSpaceMultiplier;
+		bottomLeftWestOffset = new Vector3(0.250f, 0.0f, 0.5f - roadWidthOverTwo) * worldSpaceMultiplier;
+		bottomRightWestOffset = new Vector3(0.5f - roadWidthOverTwo, 0.0f, 0.5f - roadWidthOverTwo) * worldSpaceMultiplier;
+
+		topLeftEastOffset = new Vector3(0.5f + roadWidthOverTwo, 0.0f, 0.5f + roadWidthOverTwo) * worldSpaceMultiplier;
+		topRightEastOffset = new Vector3(0.750f, 0.0f, 0.5f + roadWidthOverTwo) * worldSpaceMultiplier;
+		bottomLeftEastOffset = new Vector3(0.5f + roadWidthOverTwo, 0.0f, 0.5f - roadWidthOverTwo) * worldSpaceMultiplier;
+		bottomRightEastOffset = new Vector3(0.750f, 0.0f, 0.5f - roadWidthOverTwo) * worldSpaceMultiplier;
+
+		topLeftNorthOffset = new Vector3(0.5f - roadWidthOverTwo, 0.0f, 0.750f) * worldSpaceMultiplier;
+		topRightNorthOffset = new Vector3(0.5f + roadWidthOverTwo, 0.0f, 0.750f) * worldSpaceMultiplier;
+		bottomLeftNorthOffset = new Vector3(0.5f - roadWidthOverTwo, 0.0f, 0.5f + roadWidthOverTwo) * worldSpaceMultiplier;
+		bottomRightNorthOffset = new Vector3(0.5f + roadWidthOverTwo, 0.0f, 0.5f + roadWidthOverTwo) * worldSpaceMultiplier;
+
+		topLeftSouthOffset = new Vector3(0.5f - roadWidthOverTwo, 0.0f, 0.5f - roadWidthOverTwo) * worldSpaceMultiplier;
+		topRightSouthOffset = new Vector3(0.5f + roadWidthOverTwo, 0.0f, 0.5f - roadWidthOverTwo) * worldSpaceMultiplier;
+		bottomLeftSouthOffset = new Vector3(0.5f - roadWidthOverTwo, 0.0f, 0.250f) * worldSpaceMultiplier;
+		bottomRightSouthOffset = new Vector3(0.5f + roadWidthOverTwo, 0.0f, 0.250f) * worldSpaceMultiplier;
+	}
+}
+
 public class TerrainManager : MonoBehaviour {
 
 	public TerrainData data;
@@ -174,7 +230,7 @@ public class TerrainManager : MonoBehaviour {
 
 		int index = 0;
 
-		var roadWidth = 0.150f;
+		var roadWidth = 0.40f;
 		var roadWidthOverTwo = roadWidth / 2.0f;
 		// roads own their top and right corners for sloping behavior
 
@@ -183,52 +239,15 @@ public class TerrainManager : MonoBehaviour {
 		var westLeftOffset = new Vector3(-0.250f, 0.0f, 0.0f) * worldSpaceMultiplier;
 		var southBottomOffset = new Vector3(0.0f, 0.0f, -.250f) * worldSpaceMultiplier;
 
-		var topLeftCenterOffset = new Vector3(0.5f - roadWidthOverTwo, 0.0f, 0.5f + roadWidthOverTwo) * worldSpaceMultiplier;
-		var topRightCenterOffset = new Vector3(0.5f + roadWidthOverTwo, 0.0f, 0.5f + roadWidthOverTwo) * worldSpaceMultiplier;
-		var bottomLeftCenterOffset = new Vector3(0.5f - roadWidthOverTwo, 0.0f, 0.5f - roadWidthOverTwo) * worldSpaceMultiplier;
-		var bottomRightCenterOffset = new Vector3(0.5f + roadWidthOverTwo, 0.0f, 0.5f - roadWidthOverTwo) * worldSpaceMultiplier;
-
-		var topLeftWestOffset = new Vector3(0.250f, 0.0f, 0.5f + roadWidthOverTwo) * worldSpaceMultiplier;
-		var topRightWestOffset = new Vector3(0.5f - roadWidthOverTwo, 0.0f, 0.5f + roadWidthOverTwo) * worldSpaceMultiplier;
-		var bottomLeftWestOffset = new Vector3(0.250f, 0.0f, 0.5f - roadWidthOverTwo) * worldSpaceMultiplier;
-		var bottomRightWestOffset = new Vector3(0.5f - roadWidthOverTwo, 0.0f, 0.5f - roadWidthOverTwo) * worldSpaceMultiplier;
-
-		var topLeftEastOffset = new Vector3(0.5f + roadWidthOverTwo, 0.0f, 0.5f + roadWidthOverTwo) * worldSpaceMultiplier;
-		var topRightEastOffset = new Vector3(0.750f, 0.0f, 0.5f + roadWidthOverTwo) * worldSpaceMultiplier;
-		var bottomLeftEastOffset = new Vector3(0.5f + roadWidthOverTwo, 0.0f, 0.5f - roadWidthOverTwo) * worldSpaceMultiplier;
-		var bottomRightEastOffset = new Vector3(0.750f, 0.0f, 0.5f - roadWidthOverTwo) * worldSpaceMultiplier;
-
-		var topLeftNorthOffset = new Vector3(0.5f - roadWidthOverTwo, 0.0f, 0.750f) * worldSpaceMultiplier;
-		var topRightNorthOffset = new Vector3(0.5f + roadWidthOverTwo, 0.0f, 0.750f) * worldSpaceMultiplier;
-		var bottomLeftNorthOffset = new Vector3(0.5f - roadWidthOverTwo, 0.0f, 0.5f + roadWidthOverTwo) * worldSpaceMultiplier;
-		var bottomRightNorthOffset = new Vector3(0.5f + roadWidthOverTwo, 0.0f, 0.5f + roadWidthOverTwo) * worldSpaceMultiplier;
-
-		var topLeftSouthOffset = new Vector3(0.5f - roadWidthOverTwo, 0.0f, 0.5f - roadWidthOverTwo) * worldSpaceMultiplier;
-		var topRightSouthOffset = new Vector3(0.5f + roadWidthOverTwo, 0.0f, 0.5f - roadWidthOverTwo) * worldSpaceMultiplier;
-		var bottomLeftSouthOffset = new Vector3(0.5f - roadWidthOverTwo, 0.0f, 0.250f) * worldSpaceMultiplier;
-		var bottomRightSouthOffset = new Vector3(0.5f + roadWidthOverTwo, 0.0f, 0.250f) * worldSpaceMultiplier;
-
-		// var topLeftWestOffset = new Vector3(0.0f, 0.0f, 0.5f + roadWidthOverTwo) * worldSpaceMultiplier;
-		// var topRightWestOffset = new Vector3(0.5f - roadWidthOverTwo, 0.0f, 0.5f + roadWidthOverTwo) * worldSpaceMultiplier;
-		// var bottomLeftWestOffset = new Vector3(0.0f, 0.0f, 0.5f - roadWidthOverTwo) * worldSpaceMultiplier;
-		// var bottomRightWestOffset = new Vector3(0.5f - roadWidthOverTwo, 0.0f, 0.5f - roadWidthOverTwo) * worldSpaceMultiplier;
-
-		// var topLeftEastOffset = new Vector3(0.5f + roadWidthOverTwo, 0.0f, 0.5f + roadWidthOverTwo) * worldSpaceMultiplier;
-		// var topRightEastOffset = new Vector3(1.0f, 0.0f, 0.5f + roadWidthOverTwo) * worldSpaceMultiplier;
-		// var bottomLeftEastOffset = new Vector3(0.5f + roadWidthOverTwo, 0.0f, 0.5f - roadWidthOverTwo) * worldSpaceMultiplier;
-		// var bottomRightEastOffset = new Vector3(1.0f, 0.0f, 0.5f - roadWidthOverTwo) * worldSpaceMultiplier;
-
-		// var topLeftNorthOffset = new Vector3(0.5f - roadWidthOverTwo, 0.0f, 1.0f) * worldSpaceMultiplier;
-		// var topRightNorthOffset = new Vector3(0.5f + roadWidthOverTwo, 0.0f, 1.0f) * worldSpaceMultiplier;
-		// var bottomLeftNorthOffset = new Vector3(0.5f - roadWidthOverTwo, 0.0f, 0.5f + roadWidthOverTwo) * worldSpaceMultiplier;
-		// var bottomRightNorthOffset = new Vector3(0.5f + roadWidthOverTwo, 0.0f, 0.5f + roadWidthOverTwo) * worldSpaceMultiplier;
-
-		// var topLeftSouthOffset = new Vector3(0.5f - roadWidthOverTwo, 0.0f, 0.5f - roadWidthOverTwo) * worldSpaceMultiplier;
-		// var topRightSouthOffset = new Vector3(0.5f + roadWidthOverTwo, 0.0f, 0.5f - roadWidthOverTwo) * worldSpaceMultiplier;
-		// var bottomLeftSouthOffset = new Vector3(0.5f - roadWidthOverTwo, 0.0f, 0.0f) * worldSpaceMultiplier;
-		// var bottomRightSouthOffset = new Vector3(0.5f + roadWidthOverTwo, 0.0f, 0.0f) * worldSpaceMultiplier;
+		RoadOffsets[] offsets = {
+			new RoadOffsets(0.100f, worldSpaceMultiplier),
+			new RoadOffsets(0.175f, worldSpaceMultiplier),
+			new RoadOffsets(0.250f, worldSpaceMultiplier),
+		};
 
 		Vector3 verticalOffset = Vector3.zero;
+
+		Dictionary<RoadTile, int[]> indexLookup = new Dictionary<RoadTile, int[]>();
 
 		var elevationDelta = data.yScale;
 
@@ -236,9 +255,147 @@ public class TerrainManager : MonoBehaviour {
 		//		IDEA: Two pass solution. Draw internal segments first, then in second pass work backwards
 		//			(from the highest row and column) to generate the segments, stitching as appropriate.
 		//			Use hash table to lookup the start vertex of neighboring vertices
+		const int DirectionOfTravelCenter = 4;
+
 		for (int row = 0; row < height; row++) {
 			for (int col = 0; col < width; col++) {
 				var tile = roadManager.tiles[row, col];
+
+				indexLookup[tile] = new int[5];
+
+				if(!tile.Occupied) {
+					indexLookup[tile][(int)DirectionOfTravel.Left] = -1;
+					indexLookup[tile][(int)DirectionOfTravel.Right] = -1;
+					indexLookup[tile][(int)DirectionOfTravel.Up] = -1;
+					indexLookup[tile][(int)DirectionOfTravel.Down] = -1;
+					indexLookup[tile][(int)DirectionOfTravelCenter] = -1;
+					continue;
+				}
+
+				var worldY = heights[row * worldSpaceMultiplier, col * worldSpaceMultiplier] * data.yScale + 0.05f;
+				var worldX = col * worldSpaceMultiplier;
+				var worldZ = row * worldSpaceMultiplier;
+
+				var worldSpacePos = new Vector3(worldX, worldY, worldZ);
+
+				if(tile.horizontalRoad != null)
+				Debug.Log(tile.horizontalRoad.size);
+
+				if(tile.verticalRoad != null)
+				Debug.Log(tile.verticalRoad.size);
+
+				var roadSizeHorizontal = tile.horizontalRoad != null ? (int)tile.horizontalRoad.size : -1;
+				var roadSizeVertical = tile.verticalRoad != null ? (int)tile.verticalRoad.size : -1;
+				var roadSizeLargest = roadSizeHorizontal > roadSizeVertical ? roadSizeHorizontal : roadSizeVertical;
+
+				// START Road Center
+				indexLookup[tile][(int)DirectionOfTravelCenter] = index;
+				vertices.Add(offsets[roadSizeLargest].topLeftCenterOffset + worldSpacePos);
+				vertices.Add(offsets[roadSizeLargest].topRightCenterOffset + worldSpacePos);
+				vertices.Add(offsets[roadSizeLargest].bottomLeftCenterOffset + worldSpacePos);
+				vertices.Add(offsets[roadSizeLargest].bottomRightCenterOffset + worldSpacePos);
+
+				index = addIndices(indices, index);
+				// END Road Center
+
+				RoadTile t = tile;
+				RoadTile n = null;
+				int curHeight = heights[row * worldSpaceMultiplier, col * worldSpaceMultiplier];
+				var center = -1;
+				foreach (var v in tile.getNeighbors()) {
+					switch(v) {
+					case DirectionOfTravel.Right:
+						n = roadManager.tiles[row, col + 1];
+						if((n.horizontalRoad == null || !n.horizontalRoad.up_left) && (t.horizontalRoad == null || !t.horizontalRoad.down_right)) {
+							continue;
+						}
+
+						// Add inner segment
+						indexLookup[tile][(int)DirectionOfTravel.Right] = index;
+						vertices.Add(offsets[roadSizeHorizontal].topRightEastOffset + worldSpacePos);
+						vertices.Add(offsets[roadSizeHorizontal].bottomRightEastOffset + worldSpacePos);
+
+						center = indexLookup[tile][(int)DirectionOfTravelCenter];
+						indices.Add(center + 1);
+						indices.Add(index + 0);
+						indices.Add(center + 3);
+						indices.Add(index + 0);
+						indices.Add(index + 1);
+						indices.Add(center + 3);
+						index += 2;
+						break;
+					case DirectionOfTravel.Left:
+						n = roadManager.tiles[row, col - 1];
+						if((n.horizontalRoad == null || !n.horizontalRoad.down_right) && (t.horizontalRoad == null || !t.horizontalRoad.up_left)) {
+							continue;
+						}
+
+						// Add inner segment
+						indexLookup[tile][(int)DirectionOfTravel.Left] = index;
+						vertices.Add(offsets[roadSizeHorizontal].topLeftWestOffset + worldSpacePos);
+						vertices.Add(offsets[roadSizeHorizontal].bottomLeftWestOffset + worldSpacePos);
+
+						center = indexLookup[tile][(int)DirectionOfTravelCenter];
+						indices.Add(index + 0);
+						indices.Add(center + 0);
+						indices.Add(index + 1);
+						indices.Add(center + 0);
+						indices.Add(center + 2);
+						indices.Add(index + 1);
+						index += 2;
+						break;
+					case DirectionOfTravel.Up:
+						n = roadManager.tiles[row + 1, col];
+
+						if((n.verticalRoad == null || !n.verticalRoad.down_right) && (t.verticalRoad == null || !t.verticalRoad.up_left)) {
+							continue;
+						}
+
+						// Add inner segment
+						indexLookup[tile][(int)DirectionOfTravel.Up] = index;
+						vertices.Add(offsets[roadSizeVertical].topLeftNorthOffset + worldSpacePos);
+						vertices.Add(offsets[roadSizeVertical].topRightNorthOffset + worldSpacePos);
+
+						center = indexLookup[tile][(int)DirectionOfTravelCenter];
+						indices.Add(index + 0);
+						indices.Add(index + 1);
+						indices.Add(center + 0);
+						indices.Add(index + 1);
+						indices.Add(center + 1);
+						indices.Add(center + 0);
+						index += 2;
+						break;
+					case DirectionOfTravel.Down:
+						n = roadManager.tiles[row - 1, col];
+						if((n.verticalRoad == null || !n.verticalRoad.up_left) && (t.verticalRoad == null || !t.verticalRoad.down_right)) {
+							continue;
+						}
+
+						// Add inner segment
+						indexLookup[tile][(int)DirectionOfTravel.Down] = index;
+						vertices.Add(offsets[roadSizeVertical].bottomLeftSouthOffset + worldSpacePos);
+						vertices.Add(offsets[roadSizeVertical].bottomRightSouthOffset + worldSpacePos);
+
+						center = indexLookup[tile][(int)DirectionOfTravelCenter];
+						indices.Add(center + 2);
+						indices.Add(center + 3);
+						indices.Add(index + 0);
+						indices.Add(center + 3);
+						indices.Add(index + 1);
+						indices.Add(index + 0);
+						index += 2;
+						break;
+					default:
+						break;
+					}
+				}
+			}
+		}
+
+		for (int row = 0; row < height; row++) {
+			for (int col = 0; col < width; col++) {
+				var tile = roadManager.tiles[row, col];
+
 				if(!tile.Occupied) {
 					continue;
 				}
@@ -249,20 +406,17 @@ public class TerrainManager : MonoBehaviour {
 
 				var worldSpacePos = new Vector3(worldX, worldY, worldZ);
 
-				// START Road Center
-				vertices.Add(topLeftCenterOffset + worldSpacePos);
-				vertices.Add(topRightCenterOffset + worldSpacePos);
-				vertices.Add(bottomLeftCenterOffset + worldSpacePos);
-				vertices.Add(bottomRightCenterOffset + worldSpacePos);
-
-				index = addIndices(indices, index);
-				// END Road Center
+				var roadSizeHorizontal = tile.horizontalRoad != null ? (int)tile.horizontalRoad.size : -1;
+				var roadSizeVertical = tile.verticalRoad != null ? (int)tile.verticalRoad.size : -1;
+				var roadSizeLargest = roadSizeHorizontal > roadSizeVertical ? roadSizeHorizontal : roadSizeVertical;
 
 				RoadTile t = tile;
 				RoadTile n = null;
 				int nh = -1;
 				int curHeight = heights[row * worldSpaceMultiplier, col * worldSpaceMultiplier];
 				float nhWorldSpace = 0.0f;
+				int neighborIndex = -1;
+				int myIndex = -1;
 				foreach (var v in tile.getNeighbors()) {
 					switch(v) {
 					case DirectionOfTravel.Right:
@@ -271,13 +425,6 @@ public class TerrainManager : MonoBehaviour {
 							continue;
 						}
 
-						// Add inner segment
-						vertices.Add(topLeftEastOffset + worldSpacePos);
-						vertices.Add(topRightEastOffset + worldSpacePos);
-						vertices.Add(bottomLeftEastOffset + worldSpacePos);
-						vertices.Add(bottomRightEastOffset + worldSpacePos);
-
-						index = addIndices(indices, index);
 
 						// Add outer segment (potentially sloped)
 						nh = heights[row * worldSpaceMultiplier, (col + 1) * worldSpaceMultiplier];
@@ -289,41 +436,42 @@ public class TerrainManager : MonoBehaviour {
 						} else {
 							verticalOffset = new Vector3(0.0f, elevationDelta, 0.0f);
 						}
-						vertices.Add(topRightEastOffset + worldSpacePos + eastRightOffset + verticalOffset);
-						vertices.Add(bottomRightEastOffset + worldSpacePos + eastRightOffset + verticalOffset);
-						indices.Add(index - 3);
+
+						myIndex = indexLookup[tile][(int)DirectionOfTravel.Right];
+						indexLookup[tile][(int)DirectionOfTravel.Right] = index;
+
+						vertices.Add(offsets[roadSizeHorizontal].topRightEastOffset + worldSpacePos + eastRightOffset + verticalOffset);
+						vertices.Add(offsets[roadSizeHorizontal].bottomRightEastOffset + worldSpacePos + eastRightOffset + verticalOffset);
+						indices.Add(myIndex + 0);
 						indices.Add(index + 0);
-						indices.Add(index - 1);
+						indices.Add(myIndex + 1);
 						indices.Add(index + 0);
 						indices.Add(index + 1);
-						indices.Add(index - 1);
+						indices.Add(myIndex + 1);
 						index += 2;
 
 						break;
 					case DirectionOfTravel.Left:
 						n = roadManager.tiles[row, col - 1];
-						if((n.horizontalRoad == null || !n.horizontalRoad.down_right) && (t.horizontalRoad == null || !t.horizontalRoad.up_left)) {
+						if((n.horizontalRoad == null || !n.horizontalRoad.down_right) 
+						&& (t.horizontalRoad == null || !t.horizontalRoad.up_left)) {
 							continue;
 						}
 
-						// Add inner segment
-						vertices.Add(topLeftWestOffset + worldSpacePos);
-						vertices.Add(topRightWestOffset + worldSpacePos);
-						vertices.Add(bottomLeftWestOffset + worldSpacePos);
-						vertices.Add(bottomRightWestOffset + worldSpacePos);
-
-						index = addIndices(indices, index);
-
 						// Add outer segment (NOT sloped)
-						vertices.Add(topLeftWestOffset + worldSpacePos + westLeftOffset);
-						vertices.Add(bottomLeftWestOffset + worldSpacePos + westLeftOffset);
-						indices.Add(index + 0);
-						indices.Add(index - 4);
-						indices.Add(index + 1);
-						indices.Add(index - 4);
-						indices.Add(index - 2);
-						indices.Add(index + 1);
-						index += 2;
+						neighborIndex = indexLookup[n][(int)DirectionOfTravel.Right];
+						myIndex = indexLookup[tile][(int)DirectionOfTravel.Left];
+
+						if(neighborIndex == -1) {
+							continue;
+						}
+
+						indices.Add(neighborIndex + 0);
+						indices.Add(myIndex + 0);
+						indices.Add(neighborIndex + 1);
+						indices.Add(neighborIndex + 1);
+						indices.Add(myIndex + 0);
+						indices.Add(myIndex + 1);
 
 						break;
 					case DirectionOfTravel.Up:
@@ -332,13 +480,6 @@ public class TerrainManager : MonoBehaviour {
 						if((n.verticalRoad == null || !n.verticalRoad.down_right) && (t.verticalRoad == null || !t.verticalRoad.up_left)) {
 							continue;
 						}
-
-						// Add inner segment
-						vertices.Add(topLeftNorthOffset + worldSpacePos);
-						vertices.Add(topRightNorthOffset + worldSpacePos);
-						vertices.Add(bottomLeftNorthOffset + worldSpacePos);
-						vertices.Add(bottomRightNorthOffset + worldSpacePos);
-						index = addIndices(indices, index);
 
 						// Add outer segment (potentially sloped)
 						nh = heights[(row + 1) * worldSpaceMultiplier, col * worldSpaceMultiplier];
@@ -350,14 +491,18 @@ public class TerrainManager : MonoBehaviour {
 						} else {
 							verticalOffset = new Vector3(0.0f, elevationDelta, 0.0f);
 						}
-						vertices.Add(topLeftNorthOffset + worldSpacePos + northTopOffset + verticalOffset);
-						vertices.Add(topRightNorthOffset + worldSpacePos + northTopOffset + verticalOffset);
+
+						myIndex = indexLookup[tile][(int)DirectionOfTravel.Up];
+						indexLookup[tile][(int)DirectionOfTravel.Up] = index;
+
+						vertices.Add(offsets[roadSizeVertical].topLeftNorthOffset + worldSpacePos + northTopOffset + verticalOffset);
+						vertices.Add(offsets[roadSizeVertical].topRightNorthOffset + worldSpacePos + northTopOffset + verticalOffset);
 						indices.Add(index + 0);
 						indices.Add(index + 1);
-						indices.Add(index - 4);
+						indices.Add(myIndex + 0);
 						indices.Add(index + 1);
-						indices.Add(index - 3);
-						indices.Add(index - 4);
+						indices.Add(myIndex + 1);
+						indices.Add(myIndex + 0);
 						index += 2;
 
 						break;
@@ -367,24 +512,20 @@ public class TerrainManager : MonoBehaviour {
 							continue;
 						}
 
-						// Add inner segment
-						vertices.Add(topLeftSouthOffset + worldSpacePos);
-						vertices.Add(topRightSouthOffset + worldSpacePos);
-						vertices.Add(bottomLeftSouthOffset + worldSpacePos);
-						vertices.Add(bottomRightSouthOffset + worldSpacePos);
+						neighborIndex = indexLookup[n][(int)DirectionOfTravel.Up];
+						myIndex = indexLookup[tile][(int)DirectionOfTravel.Down];
 
-						index = addIndices(indices, index);
+						if(neighborIndex == -1) {
+							continue;
+						}
 
 						// Add outer segment (NOT sloped)
-						vertices.Add(bottomLeftSouthOffset + worldSpacePos + southBottomOffset);
-						vertices.Add(bottomRightSouthOffset + worldSpacePos + southBottomOffset);
-						indices.Add(index - 2);
-						indices.Add(index - 1);
-						indices.Add(index + 0);
-						indices.Add(index - 1);
-						indices.Add(index + 1);
-						indices.Add(index + 0);
-						index += 2;
+						indices.Add(myIndex + 0);
+						indices.Add(myIndex + 1);
+						indices.Add(neighborIndex + 0);
+						indices.Add(myIndex + 1);
+						indices.Add(neighborIndex + 1);
+						indices.Add(neighborIndex + 0);
 						
 						break;
 					default:
