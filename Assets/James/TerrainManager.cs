@@ -33,7 +33,12 @@ public class RoadOffsets {
 	public Vector3 bottomLeftSouthOffset;
 	public Vector3 bottomRightSouthOffset;
 
-	public RoadOffsets(float roadWidth, float worldSpaceMultiplier) {
+	public Vector2 topLeftUv; 
+	public Vector2 topRightUv; 
+	public Vector2 bottomLeftUv; 
+	public Vector2 bottomRightUv; 
+
+	public RoadOffsets(float roadWidth, float worldSpaceMultiplier, int myRoadTier, int numRoadTiers) {
 		float roadWidthOverTwo = roadWidth / 2.0f;
 
 		topLeftCenterOffset = new Vector3(0.5f - roadWidthOverTwo, 0.0f, 0.5f + roadWidthOverTwo) * worldSpaceMultiplier;
@@ -60,6 +65,11 @@ public class RoadOffsets {
 		topRightSouthOffset = new Vector3(0.5f + roadWidthOverTwo, 0.0f, 0.5f - roadWidthOverTwo) * worldSpaceMultiplier;
 		bottomLeftSouthOffset = new Vector3(0.5f - roadWidthOverTwo, 0.0f, 0.250f) * worldSpaceMultiplier;
 		bottomRightSouthOffset = new Vector3(0.5f + roadWidthOverTwo, 0.0f, 0.250f) * worldSpaceMultiplier;
+
+		topLeftUv = new Vector2((float)myRoadTier / numRoadTiers + 0.01f, ((float)myRoadTier+1) / numRoadTiers - 0.01f);
+		topRightUv = new Vector2(((float)myRoadTier + 1) / numRoadTiers - 0.01f, ((float)myRoadTier + 1) / numRoadTiers - 0.01f);
+		bottomLeftUv = new Vector2((float)myRoadTier / numRoadTiers + 0.01f, (float)myRoadTier / numRoadTiers + 0.01f);
+		bottomRightUv = new Vector2(((float)myRoadTier + 1) / numRoadTiers - 0.01f, (float)myRoadTier / numRoadTiers - 0.01f);
 	}
 }
 
@@ -79,6 +89,8 @@ public class TerrainManager : MonoBehaviour {
 	private MeshFilter roadMeshFilter;
 	private Mesh roadMesh;
 	private float maxHeight;
+	private GameObject roads;
+	private GameObject terrain;
 
 	int[] GetNeighborHeights(int row, int col, int[,] heights) {
 		int[] neighbors = new int[4]; // E N W S
@@ -135,7 +147,10 @@ public class TerrainManager : MonoBehaviour {
 	}
 
 	void GenerateTerrainMesh(RoadManager roadManager) {
-		GameObject terrain = new GameObject();
+		if(terrain != null) {
+			Destroy(terrain);
+		} 
+		terrain = new GameObject();
 		
 		terrain.transform.name = "Terrain";
 		terrain.transform.parent = transform;
@@ -207,8 +222,15 @@ public class TerrainManager : MonoBehaviour {
 		return index + 4;
 	}
 
+	public void RegenerateRoadMeshForTest(RoadManager roadManager) {
+		GenerateRoadMesh(roadManager);
+	}
+
 	void GenerateRoadMesh(RoadManager roadManager) {
-		GameObject roads = new GameObject();
+		if(roads != null) {
+			Destroy(roads);
+		} 
+		roads = new GameObject();
 
 		roads.transform.name = "Roads";
 		roads.transform.parent = transform;
@@ -240,9 +262,9 @@ public class TerrainManager : MonoBehaviour {
 		var southBottomOffset = new Vector3(0.0f, 0.0f, -.250f) * worldSpaceMultiplier;
 
 		RoadOffsets[] offsets = {
-			new RoadOffsets(0.1f, worldSpaceMultiplier),
-			new RoadOffsets(0.15f, worldSpaceMultiplier),
-			new RoadOffsets(0.2f, worldSpaceMultiplier),
+			new RoadOffsets(0.1f, worldSpaceMultiplier, 0, 3), // hardcoded magic numbers. 
+			new RoadOffsets(0.15f, worldSpaceMultiplier, 1, 3), // WHAT ARE YOU GONNA DO ABOUT IT?
+			new RoadOffsets(0.2f, worldSpaceMultiplier, 2, 3), // huh? what? yeah, thought so, chump.
 		};
 
 		Vector3 verticalOffset = Vector3.zero;
@@ -282,12 +304,19 @@ public class TerrainManager : MonoBehaviour {
 				var roadSizeVertical = tile.verticalRoad != null ? (int)tile.verticalRoad.size : -1;
 				var roadSizeLargest = roadSizeHorizontal > roadSizeVertical ? roadSizeHorizontal : roadSizeVertical;
 
+				int roadSizeNeighbor = -1;
+				int roadSizeToUse = -1;
+
 				// START Road Center
 				indexLookup[tile][(int)DirectionOfTravelCenter] = index;
 				vertices.Add(offsets[roadSizeLargest].topLeftCenterOffset + worldSpacePos);
 				vertices.Add(offsets[roadSizeLargest].topRightCenterOffset + worldSpacePos);
 				vertices.Add(offsets[roadSizeLargest].bottomLeftCenterOffset + worldSpacePos);
 				vertices.Add(offsets[roadSizeLargest].bottomRightCenterOffset + worldSpacePos);
+				uvs.Add(offsets[roadSizeLargest].topLeftUv);
+				uvs.Add(offsets[roadSizeLargest].topRightUv);
+				uvs.Add(offsets[roadSizeLargest].bottomLeftUv);
+				uvs.Add(offsets[roadSizeLargest].bottomRightUv);
 
 				index = addIndices(indices, index);
 				// END Road Center
@@ -304,11 +333,18 @@ public class TerrainManager : MonoBehaviour {
 							continue;
 						}
 
+						roadSizeToUse = roadSizeHorizontal;
+						if (n.horizontalRoad != null) {
+							roadSizeNeighbor = (int)n.horizontalRoad.size;
+							roadSizeToUse = roadSizeNeighbor < roadSizeHorizontal? roadSizeNeighbor : roadSizeHorizontal;
+						}
+
 						// Add inner segment
 						indexLookup[tile][(int)DirectionOfTravel.Right] = index;
-						vertices.Add(offsets[roadSizeHorizontal].topRightEastOffset + worldSpacePos);
-						vertices.Add(offsets[roadSizeHorizontal].bottomRightEastOffset + worldSpacePos);
-
+						vertices.Add(offsets[roadSizeToUse].topRightEastOffset + worldSpacePos);
+						vertices.Add(offsets[roadSizeToUse].bottomRightEastOffset + worldSpacePos);
+						uvs.Add(offsets[roadSizeToUse].topLeftUv);
+						uvs.Add(offsets[roadSizeToUse].bottomLeftUv);
 						center = indexLookup[tile][(int)DirectionOfTravelCenter];
 						indices.Add(center + 1);
 						indices.Add(index + 0);
@@ -323,12 +359,19 @@ public class TerrainManager : MonoBehaviour {
 						if((n.horizontalRoad == null || !n.horizontalRoad.down_right) && (t.horizontalRoad == null || !t.horizontalRoad.up_left)) {
 							continue;
 						}
+						
+						roadSizeToUse = roadSizeHorizontal;
+						if (n.horizontalRoad != null) {
+							roadSizeNeighbor = (int)n.horizontalRoad.size;
+							roadSizeToUse = roadSizeNeighbor < roadSizeHorizontal? roadSizeNeighbor : roadSizeHorizontal;
+						}
 
 						// Add inner segment
 						indexLookup[tile][(int)DirectionOfTravel.Left] = index;
-						vertices.Add(offsets[roadSizeHorizontal].topLeftWestOffset + worldSpacePos);
-						vertices.Add(offsets[roadSizeHorizontal].bottomLeftWestOffset + worldSpacePos);
-
+						vertices.Add(offsets[roadSizeToUse].topLeftWestOffset + worldSpacePos);
+						vertices.Add(offsets[roadSizeToUse].bottomLeftWestOffset + worldSpacePos);
+						uvs.Add(offsets[roadSizeToUse].topRightUv);
+						uvs.Add(offsets[roadSizeToUse].bottomRightUv);
 						center = indexLookup[tile][(int)DirectionOfTravelCenter];
 						indices.Add(index + 0);
 						indices.Add(center + 0);
@@ -345,11 +388,18 @@ public class TerrainManager : MonoBehaviour {
 							continue;
 						}
 
+						roadSizeToUse = roadSizeVertical;
+						if (n.verticalRoad != null) {
+							roadSizeNeighbor = (int)n.verticalRoad.size;
+							roadSizeToUse = roadSizeNeighbor < roadSizeVertical? roadSizeNeighbor : roadSizeVertical;
+						}
+
 						// Add inner segment
 						indexLookup[tile][(int)DirectionOfTravel.Up] = index;
-						vertices.Add(offsets[roadSizeVertical].topLeftNorthOffset + worldSpacePos);
-						vertices.Add(offsets[roadSizeVertical].topRightNorthOffset + worldSpacePos);
-
+						vertices.Add(offsets[roadSizeToUse].topLeftNorthOffset + worldSpacePos);
+						vertices.Add(offsets[roadSizeToUse].topRightNorthOffset + worldSpacePos);
+						uvs.Add(offsets[roadSizeToUse].bottomLeftUv);
+						uvs.Add(offsets[roadSizeToUse].bottomRightUv);
 						center = indexLookup[tile][(int)DirectionOfTravelCenter];
 						indices.Add(index + 0);
 						indices.Add(index + 1);
@@ -365,11 +415,18 @@ public class TerrainManager : MonoBehaviour {
 							continue;
 						}
 
+						roadSizeToUse = roadSizeVertical;
+						if (n.verticalRoad != null) {
+							roadSizeNeighbor = (int)n.verticalRoad.size;
+							roadSizeToUse = roadSizeNeighbor < roadSizeVertical? roadSizeNeighbor : roadSizeVertical;
+						}
+
 						// Add inner segment
 						indexLookup[tile][(int)DirectionOfTravel.Down] = index;
-						vertices.Add(offsets[roadSizeVertical].bottomLeftSouthOffset + worldSpacePos);
-						vertices.Add(offsets[roadSizeVertical].bottomRightSouthOffset + worldSpacePos);
-
+						vertices.Add(offsets[roadSizeToUse].bottomLeftSouthOffset + worldSpacePos);
+						vertices.Add(offsets[roadSizeToUse].bottomRightSouthOffset + worldSpacePos);
+						uvs.Add(offsets[roadSizeToUse].topLeftUv);
+						uvs.Add(offsets[roadSizeToUse].bottomRightUv);
 						center = indexLookup[tile][(int)DirectionOfTravelCenter];
 						indices.Add(center + 2);
 						indices.Add(center + 3);
@@ -404,6 +461,9 @@ public class TerrainManager : MonoBehaviour {
 				var roadSizeVertical = tile.verticalRoad != null ? (int)tile.verticalRoad.size : -1;
 				var roadSizeLargest = roadSizeHorizontal > roadSizeVertical ? roadSizeHorizontal : roadSizeVertical;
 
+				int roadSizeNeighbor = -1;
+				int roadSizeToUse = -1;
+
 				RoadTile t = tile;
 				RoadTile n = null;
 				int nh = -1;
@@ -433,9 +493,17 @@ public class TerrainManager : MonoBehaviour {
 
 						myIndex = indexLookup[tile][(int)DirectionOfTravel.Right];
 						indexLookup[tile][(int)DirectionOfTravel.Right] = index;
+						
+						roadSizeToUse = roadSizeHorizontal;
+						if (n.horizontalRoad != null) {
+							roadSizeNeighbor = (int)n.horizontalRoad.size;
+							roadSizeToUse = roadSizeNeighbor < roadSizeHorizontal? roadSizeNeighbor : roadSizeHorizontal;
+						}
 
-						vertices.Add(offsets[roadSizeHorizontal].topRightEastOffset + worldSpacePos + eastRightOffset + verticalOffset);
-						vertices.Add(offsets[roadSizeHorizontal].bottomRightEastOffset + worldSpacePos + eastRightOffset + verticalOffset);
+						vertices.Add(offsets[roadSizeToUse].topRightEastOffset + worldSpacePos + eastRightOffset + verticalOffset);
+						vertices.Add(offsets[roadSizeToUse].bottomRightEastOffset + worldSpacePos + eastRightOffset + verticalOffset);
+						uvs.Add(offsets[roadSizeToUse].topLeftUv);
+						uvs.Add(offsets[roadSizeToUse].bottomLeftUv);
 						indices.Add(myIndex + 0);
 						indices.Add(index + 0);
 						indices.Add(myIndex + 1);
@@ -489,8 +557,16 @@ public class TerrainManager : MonoBehaviour {
 						myIndex = indexLookup[tile][(int)DirectionOfTravel.Up];
 						indexLookup[tile][(int)DirectionOfTravel.Up] = index;
 
-						vertices.Add(offsets[roadSizeVertical].topLeftNorthOffset + worldSpacePos + northTopOffset + verticalOffset);
-						vertices.Add(offsets[roadSizeVertical].topRightNorthOffset + worldSpacePos + northTopOffset + verticalOffset);
+						roadSizeToUse = roadSizeVertical;
+						if (n.verticalRoad != null) {
+							roadSizeNeighbor = (int)n.verticalRoad.size;
+							roadSizeToUse = roadSizeNeighbor < roadSizeVertical? roadSizeNeighbor : roadSizeVertical;
+						}
+
+						vertices.Add(offsets[roadSizeToUse].topLeftNorthOffset + worldSpacePos + northTopOffset + verticalOffset);
+						vertices.Add(offsets[roadSizeToUse].topRightNorthOffset + worldSpacePos + northTopOffset + verticalOffset);
+						uvs.Add(offsets[roadSizeToUse].topLeftUv);
+						uvs.Add(offsets[roadSizeToUse].topRightUv);
 						indices.Add(index + 0);
 						indices.Add(index + 1);
 						indices.Add(myIndex + 0);
