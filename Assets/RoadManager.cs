@@ -41,7 +41,7 @@ public class Road {
 }
 
 
-public enum DirectionOfTravel: byte {Up, Down, Left, Right}
+public enum DirectionOfTravel: byte {Up, Left, Down, Right}
 
 // Tile is a cell on the game board. Roads interconnect tiles
 public class RoadTile {
@@ -65,7 +65,7 @@ public class RoadTile {
     public Queue<CarPathfinder> upQueue, downQueue, leftQueue, rightQueue;
     DirectionOfTravel phase = DirectionOfTravel.Up;
 
-    float totalSeconds = 10.0f;
+    float totalSeconds = 5.0f;
     float currentSeconds = 0.0f;
 
     public RoadTile() {
@@ -112,7 +112,7 @@ public class RoadTile {
                     }
                 } else {
                     // Debug.Log("Nothing in queue UP");
-                    // currentSeconds += 0.1f; // Help the clock along.
+                    currentSeconds += 0.1f; // Help the clock along.
                 }
 
                 break;
@@ -130,7 +130,7 @@ public class RoadTile {
                 }
                 else {
                     // Debug.Log("Nothing in queue DOWN");
-                    // currentSeconds += 0.5f; // Help the clock along.
+                    currentSeconds += 0.1f; // Help the clock along.
                 }
 
                 break;
@@ -148,7 +148,7 @@ public class RoadTile {
                 }
                 else {
                     // Debug.Log("Nothing in queue LEFT");
-                    // currentSeconds += 0.5f; // Help the clock along.
+                    currentSeconds += 0.1f; // Help the clock along.
                 }
 
                 break;
@@ -166,7 +166,7 @@ public class RoadTile {
                 }
                 else {
                     // Debug.Log("Nothing in queue RIGHT");
-                    // currentSeconds += 0.5f; // Help the clock along.
+                    currentSeconds += 0.1f; // Help the clock along.
                 }
 
                 break;
@@ -506,9 +506,9 @@ public class RoadManager : MonoBehaviour {
                         foreach (var twiddle4 in twiddles)
                         {
                             makeACarGo(tiles[24 + twiddle1, 16 + twiddle2], tiles[20 + twiddle3, 22 + twiddle4]);
-                            //makeACarGo(tiles[20 + twiddle1, 16 + twiddle2], tiles[20 + twiddle3, 18 + twiddle4]);
-                            //makeACarGo(tiles[24 + twiddle1, 16 + twiddle2], tiles[19 + twiddle3, 22 + twiddle4]);
-                            //makeACarGo(tiles[24 + twiddle1, 16 + twiddle2], tiles[4  + twiddle3, 40 + twiddle4]);
+                            makeACarGo(tiles[20 + twiddle1, 16 + twiddle2], tiles[20 + twiddle3, 18 + twiddle4]);
+                            makeACarGo(tiles[24 + twiddle1, 16 + twiddle2], tiles[19 + twiddle3, 22 + twiddle4]);
+                            makeACarGo(tiles[24 + twiddle1, 16 + twiddle2], tiles[4  + twiddle3, 40 + twiddle4]);
                         }
                     }
                 }
