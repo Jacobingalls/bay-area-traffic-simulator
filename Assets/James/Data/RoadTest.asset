@@ -1,0 +1,16 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4634f72bfc0dd4b61859b40da2a93819, type: 3}
+  m_Name: RoadTest
+  m_EditorClassIdentifier: 
+  autoUpdate: 1
+  enableCarSim: 0
+  carModel: {fileID: 1564882776571400, guid: 5ce25e7a338714158a91b2f59071c017, type: 2}

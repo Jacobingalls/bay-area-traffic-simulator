@@ -9,22 +9,7 @@ public enum TileType {
 
 public class TerrainManager : MonoBehaviour {
 
-	public int width = 10;
-
-	public int height = 10;
-
-	[Range(0.1f, 2.0f)]
-	public float yScale = 1.0f / 1.2f;
-
-	[Range(1, 20)]
-	public int quantizationRange = 6;
-
-	public Texture2D heightmap;
-	public GameObject tilePrefab;
-	public Material terrainMaterial;
-	public Material roadMaterial;
-	public TerrainData terrainData;
-    public GameObject carModel;
+	public TerrainData data;
 
 	private int[,] heights;
 
@@ -37,7 +22,6 @@ public class TerrainManager : MonoBehaviour {
 	private MeshRenderer roadMeshRenderer;
 	private MeshFilter roadMeshFilter;
 	private Mesh roadMesh;
-	private RoadManager rm;
 	private float maxHeight;
 
 	int[] GetNeighborHeights(int row, int col, int[,] heights) {
@@ -70,53 +54,38 @@ public class TerrainManager : MonoBehaviour {
 	}
 
 	void OnValuesUpdates() {
-		terrainData.ApplyToMaterial(terrainMaterial);
-		terrainData.UpdateMeshHeights(terrainMaterial, 0.0f, maxHeight);
+		data.ApplyToMaterial(data.terrainMaterial);
+		data.UpdateMeshHeights(data.terrainMaterial, 0.0f, maxHeight);
 	}
 
-	// Use this for initialization
-	void Start () {
-		rm = gameObject.AddComponent<RoadManager>();
-
-		maxHeight = quantizationRange * yScale;
+	public void Initialize () {
+		maxHeight = data.quantizationRange * data.yScale;
 		
-		terrainData.OnValuesUpdates += OnValuesUpdates;
-		terrainData.ApplyToMaterial(terrainMaterial);
-		terrainData.UpdateMeshHeights(terrainMaterial, 0.0f, maxHeight);
+		data.OnValuesUpdates += OnValuesUpdates;
+		data.ApplyToMaterial(data.terrainMaterial);
+		data.UpdateMeshHeights(data.terrainMaterial, 0.0f, maxHeight);
 
-		// tiles = new Tile[height, width];
-		// for (int row = 0; row < height; row++) {
-		// 	for (int col = 0; col < width; col++) {
-		// 		tiles[row, col] = new Tile();
-		// 		tiles[row, col].row = row;
-		// 		tiles[row, col].col = col;
-		// 		tiles[row, col].height = Mathf.RoundToInt(heightmap.GetPixel(col, row).r * 6.0f);
-		// 		tiles[row, col].type = TileType.Grass;
-		// 	}
-		// }
-
-		heights = new int[height, width];
-		for (int row = 0; row < height; row++) {
-			for (int col = 0; col < width; col++) {
-				heights[row, col] = Mathf.RoundToInt(heightmap.GetPixel(col, row).r * 6.0f);
+		heights = new int[data.height, data.width];
+		for (int row = 0; row < data.height; row++) {
+			for (int col = 0; col < data.width; col++) {
+				heights[row, col] = Mathf.RoundToInt(data.heightmap.GetPixel(col, row).r * 6.0f);
 			}
 		}
-
-
-		rm.Initialize(this);
-
-		GenerateTerrainMesh();
-		GenerateRoadMesh();
 	}
 
-	void GenerateTerrainMesh() {
+	public void GenerateMeshes(RoadManager roadManager) {
+		GenerateTerrainMesh(roadManager);
+		GenerateRoadMesh(roadManager);
+	}
+
+	void GenerateTerrainMesh(RoadManager roadManager) {
 		GameObject terrain = new GameObject();
 		
 		terrain.transform.name = "Terrain";
 		terrain.transform.parent = transform;
 
 		var meshRenderer = terrain.AddComponent<MeshRenderer>();
-		meshRenderer.material = terrainMaterial;
+		meshRenderer.material = data.terrainMaterial;
 		var meshFilter = terrain.AddComponent<MeshFilter>();
 		var mesh = meshFilter.mesh;
 
@@ -126,9 +95,9 @@ public class TerrainManager : MonoBehaviour {
 		List<Vector2> uvs = new List<Vector2>();
 		List<int> indices = new List<int>();
 
-		for (int row = 0; row < height; row++) {
-			for (int col = 0; col < width; col++) {
-				float height = Mathf.RoundToInt(heightmap.GetPixel(col, row).r * 6.0f) * yScale;
+		for (int row = 0; row < data.height; row++) {
+			for (int col = 0; col < data.width; col++) {
+				float height = Mathf.RoundToInt(data.heightmap.GetPixel(col, row).r * 6.0f) * data.yScale;
 				vertices.Add(new Vector3(col, height, row));
 				if (row % 2 == 0) {
 					if (col % 2 == 0) {
@@ -146,12 +115,12 @@ public class TerrainManager : MonoBehaviour {
 			}
 		}
 
-		for (int row = 0; row < height - 1; row++) {
-			for (int col = 0; col < width - 1; col++) {
-				int topLeft = row * width + col;
-				int topRight = row * width + col + 1;
-				int bottomLeft = (row+1) * width + col;
-				int bottomRight = (row+1) * width + col + 1;
+		for (int row = 0; row < data.height - 1; row++) {
+			for (int col = 0; col < data.width - 1; col++) {
+				int topLeft = row * data.width + col;
+				int topRight = row * data.width + col + 1;
+				int bottomLeft = (row+1) * data.width + col;
+				int bottomRight = (row+1) * data.width + col + 1;
 
 				indices.Add(topLeft);
 				indices.Add(bottomLeft);
@@ -172,14 +141,14 @@ public class TerrainManager : MonoBehaviour {
 		meshFilter.mesh = mesh;
 	}
 
-	void GenerateRoadMesh() {
+	void GenerateRoadMesh(RoadManager roadManager) {
 		GameObject roads = new GameObject();
 
 		roads.transform.name = "Roads";
 		roads.transform.parent = transform;
 
 		var meshRenderer = roads.AddComponent<MeshRenderer>();
-		meshRenderer.material = roadMaterial;
+		meshRenderer.material = data.roadMaterial;
 		var meshFilter = roads.AddComponent<MeshFilter>();
 		var mesh = meshFilter.mesh;
 
@@ -189,8 +158,8 @@ public class TerrainManager : MonoBehaviour {
 		List<Vector2> uvs = new List<Vector2>();
 		List<int> indices = new List<int>();
 
-		int height = rm.tiles.GetLength(0);
-		int width = rm.tiles.GetLength(1);
+		int height = roadManager.tiles.GetLength(0);
+		int width = roadManager.tiles.GetLength(1);
 		int worldSpaceMultiplier = 4;
 
 		int index = 0;
@@ -224,12 +193,12 @@ public class TerrainManager : MonoBehaviour {
 
 		for (int row = 0; row < height; row++) {
 			for (int col = 0; col < width; col++) {
-				var tile = rm.tiles[row, col];
+				var tile = roadManager.tiles[row, col];
 				if(!tile.Occupied) {
 					continue;
 				}
 
-				var worldY = heights[row * worldSpaceMultiplier, col * worldSpaceMultiplier] * yScale + 0.05f;
+				var worldY = heights[row * worldSpaceMultiplier, col * worldSpaceMultiplier] * data.yScale + 0.05f;
 				var worldX = col * worldSpaceMultiplier;
 				var worldZ = row * worldSpaceMultiplier;
 
@@ -252,10 +221,12 @@ public class TerrainManager : MonoBehaviour {
 				// END Road Center
 
 				RoadTile t = tile;
+				RoadTile n = null;
 				foreach (var v in tile.getNeighbors()) {
 					switch(v) {
 					case DirectionOfTravel.Right:
-						if(t.horizontalRoad == null || !t.horizontalRoad.down_right) {
+						n = roadManager.tiles[row, col + 1];
+						if((n.horizontalRoad == null || !n.horizontalRoad.up_left) && (t.horizontalRoad == null || !t.horizontalRoad.down_right)) {
 							continue;
 						}
 
@@ -274,7 +245,8 @@ public class TerrainManager : MonoBehaviour {
 						index += 4;
 						break;
 					case DirectionOfTravel.Left:
-						if(t.horizontalRoad == null || !t.horizontalRoad.up_left) {
+						n = roadManager.tiles[row, col - 1];
+						if((n.horizontalRoad == null || !n.horizontalRoad.down_right) && (t.horizontalRoad == null || !t.horizontalRoad.up_left)) {
 							continue;
 						}
 
@@ -293,7 +265,8 @@ public class TerrainManager : MonoBehaviour {
 						index += 4;
 						break;
 					case DirectionOfTravel.Up:
-						if(t.verticalRoad == null || !t.verticalRoad.up_left) {
+						n = roadManager.tiles[row + 1, col];
+						if((n.verticalRoad == null || !n.verticalRoad.down_right) && (t.verticalRoad == null || !t.verticalRoad.up_left)) {
 							continue;
 						}
 
@@ -312,7 +285,8 @@ public class TerrainManager : MonoBehaviour {
 						index += 4;
 						break;
 					case DirectionOfTravel.Down:
-						if(t.verticalRoad == null || !t.verticalRoad.down_right) {
+						n = roadManager.tiles[row - 1, col];
+						if((n.verticalRoad == null || !n.verticalRoad.up_left) && (t.verticalRoad == null || !t.verticalRoad.down_right)) {
 							continue;
 						}
 

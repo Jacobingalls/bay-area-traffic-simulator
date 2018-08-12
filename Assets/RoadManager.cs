@@ -268,11 +268,11 @@ public class PriorityQueue<T>
 
 public class RoadManager : MonoBehaviour {
 
+
+    [HideInInspector]
     public RoadTile[,] tiles = new RoadTile[75, 50]; // row, col
 
-	// Use this for initialization
-    void Start () {
-    }
+    public RoadData data;
 
     public void Initialize(TerrainManager tm) {
         var heights = tm.GetHeights();
@@ -307,7 +307,7 @@ public class RoadManager : MonoBehaviour {
                 var vsize = (rnd.Next() % 3) + 1;
                 var hsize = (rnd.Next() % 3) + 1;
 
-                var pos = new Vector3(col * 4.0f + 2.0f, heights[row * 4, col * 4] * tm.yScale, row * 4.0f + 2.0f);
+                var pos = new Vector3(col * 4.0f + 2.0f, heights[row * 4, col * 4], row * 4.0f + 2.0f);
                 // var drawDebug = row %  == 0 && col % 3 == 0;
                 var drawDebug = true;
                 if (up || down) {
@@ -332,9 +332,12 @@ public class RoadManager : MonoBehaviour {
             } 
         }
 
-        for (var i = 0; i < 100; i ++) {
-            var car = Instantiate(tm.carModel);
-            car.GetComponent<CarPathfinder>().roadManager = gameObject;
+        if(data.enableCarSim) {
+            for (var i = 0; i < 100; i ++) {
+                var car = Instantiate(data.carModel);
+                car.GetComponent<CarPathfinder>().roadManager = gameObject;
+            }
         }
+
     }
 }
