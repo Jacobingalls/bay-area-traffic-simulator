@@ -50,6 +50,12 @@ public class RoadTile : MonoBehaviour {
     public TitleType type;
     public Density density;
 
+	private void Start()
+	{
+        //var car = Instantiate(roadManager.carModel);
+        //car.GetComponent<CarPathfinder>().roadManager = roadManager.gameObject;
+	}
+
 
 	public void Update() {
         var pos = gameObject.transform.position;
@@ -282,6 +288,7 @@ public class PriorityQueue<T>
 public class RoadManager : MonoBehaviour {
 
     public GameObject prefab;
+    public GameObject carModel;
 
     public Material roadColor, pathUsed, pathConsidered, pathStart, pathEnd;
 

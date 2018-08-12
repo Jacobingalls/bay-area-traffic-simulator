@@ -16,9 +16,8 @@ public class CarPathfinder : MonoBehaviour
 
 
 
-    System.Random rnd = new System.Random();
-
-	void determineNextDestinationAndPath() {
+    void determineNextDestinationAndPath() {
+        System.Random rnd = new System.Random();
         var rm = roadManager.GetComponent<RoadManager>();
         endTile = rm.tiles[rnd.Next() % 100, rnd.Next() % 100];
         segment = 1;
@@ -31,13 +30,13 @@ public class CarPathfinder : MonoBehaviour
 
     private void drawDebugLines() {
         var rm = roadManager.GetComponent<RoadManager>();
-        var linePos = new Vector3(startTile.transform.position.x, 3, startTile.transform.position.z);
+        var linePos = new Vector3(startTile.transform.position.x, 2, startTile.transform.position.z);
         if (path != null)
         {
             foreach (var loc in path)
             {
                 var positionOfTile = rm.tiles[loc.row, loc.col].transform.position;
-                var newLinePos = new Vector3(positionOfTile.x, 3, positionOfTile.z);
+                var newLinePos = new Vector3(positionOfTile.x, 2, positionOfTile.z);
                 Debug.DrawLine(linePos, newLinePos, Color.white, 100);
                 linePos = newLinePos;
             }
@@ -54,6 +53,7 @@ public class CarPathfinder : MonoBehaviour
 
     private void Update()
     {
+        System.Random rnd = new System.Random();
         var rm = roadManager.GetComponent<RoadManager>();
         if (startTile == null) {
             startTile = rm.tiles[rnd.Next() % 100, rnd.Next() % 100];
@@ -61,7 +61,7 @@ public class CarPathfinder : MonoBehaviour
             gameObject.transform.position = new Vector3(startTile.transform.position.x, 3, startTile.transform.position.z);
         }
 
-        drawDebugLines();
+        //drawDebugLines();
 
         if (startTile == endTile) {
             determineNextDestinationAndPath();
@@ -75,7 +75,8 @@ public class CarPathfinder : MonoBehaviour
                 progressOnCurrentSegment = 0.0f;
 
                 if (segment + 1 >= path.Count) {
-                    segment = 1;
+                    progressOnCurrentSegment = 0f;
+                    startTile = endTile;
                 } else {
                     segment++;
                 }
