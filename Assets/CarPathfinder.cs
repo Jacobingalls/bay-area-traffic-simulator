@@ -42,7 +42,7 @@ public class CarPathfinder : MonoBehaviour
 
     private void Update()
     {   
-        timeOnRoad += Time.deltaTime;
+        // timeOnRoad += Time.deltaTime;
 
         if (needsAMove) {
             move();
