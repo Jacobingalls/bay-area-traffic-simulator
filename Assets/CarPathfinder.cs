@@ -113,7 +113,7 @@ public class CarPathfinder : MonoBehaviour
                     gameObject.GetComponent<MeshRenderer>().enabled = false;
                     done = true;
 
-                    if(queue != null && queue.Peek().Equals(this)) {
+                    if(queue != null && queue.Count > 0 && queue.Peek().Equals(this)) {
                         queue.Dequeue(); 
                     }
                 }

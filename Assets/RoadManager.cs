@@ -19,11 +19,11 @@ public class Road {
     public int cost() {
         switch (size) {
             case Size.Medium:
-                return 25;
+                return 5;
             case Size.Large:
                 return 1;
             default:
-                return 50; // Small and invalid
+                return 100; // Small and invalid
         }
     }
 
