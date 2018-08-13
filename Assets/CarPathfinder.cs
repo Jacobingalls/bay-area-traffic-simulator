@@ -6,20 +6,23 @@ using System.Threading;
 
 public class CarPathfinder : MonoBehaviour
 {
+    static Vector3 surfaceOffset = new Vector3(0.0f, 0.1f, 0.0f);
+
     List<Location> path;
     bool shouldUpdatePath;
     public RoadTile originalStart, originalEnd, startTile, endTile;
 
     float progressOnCurrentSegment = 0.0f;
     int segment;
-    public GameObject roadManager;
+    public RoadManager roadManager;
     bool needsAMove = false;
 
     float refreshTime = 0;
 
-    public Material red, green, blue, yellow;
     public bool done = false;
     float timeOnRoad = 0.0f;
+
+    Material myMaterial;
 
     public void planAndGo() {
         var t = new Thread(() => {
@@ -31,16 +34,6 @@ public class CarPathfinder : MonoBehaviour
             }
         });
         t.Start();
-    }
-
-    Vector3 toWorldSpace(int row, int col, float height)
-    {
-        return new Vector3((col * 4) + 2, height, (row * 4) + 2);
-    }
-
-    Vector3 toWorldSpace(Location loc, float height)
-    {
-        return toWorldSpace(loc.row, loc.col, height);
     }
 
     private void Update()
@@ -56,10 +49,10 @@ public class CarPathfinder : MonoBehaviour
             if (segment >= path.Count) { return; }
 
             var previousLoc = path[segment - 1];
-            var previous = roadManager.GetComponent<RoadManager>().tiles[previousLoc.row, previousLoc.col];
+            var previous = roadManager.tiles[previousLoc.row, previousLoc.col];
 
             var loc = path[segment];
-            var current = roadManager.GetComponent<RoadManager>().tiles[loc.row, loc.col];
+            var current = roadManager.tiles[loc.row, loc.col];
 
             var dir = DirectionOfTravel.Right;
             if (path[segment - 1].row > path[segment].row) {
@@ -84,7 +77,24 @@ public class CarPathfinder : MonoBehaviour
                     break;
             }
 
-            gameObject.GetComponent<Renderer>().material = green;
+            switch (dir) {
+                case DirectionOfTravel.Right:
+                    transform.rotation = Quaternion.Euler(0.0f, 0.0f, 0.0f);
+                    break;
+                case DirectionOfTravel.Up:
+                    transform.rotation = Quaternion.Euler(0.0f, 90.0f, 0.0f);
+                    break;
+                case DirectionOfTravel.Left:
+                    transform.rotation = Quaternion.Euler(0.0f, 180.0f, 0.0f);
+                    break;
+                case DirectionOfTravel.Down:
+                    transform.rotation = Quaternion.Euler(0.0f, 270.0f, 0.0f);
+                    break;
+            }
+
+            if(roadManager.data.debugCarTraffic) {
+                gameObject.GetComponent<Renderer>().material = roadManager.data.green;
+            }
 
             progressOnCurrentSegment += Time.deltaTime * 0.5f * speed;
 
@@ -105,15 +115,19 @@ public class CarPathfinder : MonoBehaviour
             var maxProgress = (float)(6 - i) / 6.0f;
             if (progressOnCurrentSegment > maxProgress) {
                 progressOnCurrentSegment = maxProgress;
-                gameObject.GetComponent<Renderer>().material = red;
+                if(roadManager.data.debugCarTraffic) {
+                    gameObject.GetComponent<Renderer>().material = roadManager.data.red;
+                }
             }
 
             if (progressOnCurrentSegment >= 1) {
-                gameObject.GetComponent<Renderer>().material = yellow;
+                if(roadManager.data.debugCarTraffic) {
+                    gameObject.GetComponent<Renderer>().material = roadManager.data.yellow;
+                }
                 if (segment + 1 >= path.Count) {
                     
                     var l = path[segment];
-                    var c = roadManager.GetComponent<RoadManager>().tiles[l.row, l.col];
+                    var c = roadManager.tiles[l.row, l.col];
 
                     gameObject.GetComponent<MeshRenderer>().enabled = false;
                     done = true;
@@ -131,10 +145,7 @@ public class CarPathfinder : MonoBehaviour
             var nextLoc = path[segment];
 
             // Lets do a spline!
-            float surfaceOffset = 0.1f;
-            float previousHeight = GameManager.TerrainManagerInstance.GetWorldHeightAtLocation(previousLoc) + surfaceOffset;
-            float nextHeight = GameManager.TerrainManagerInstance.GetWorldHeightAtLocation(nextLoc) + surfaceOffset;
-            var realPos = Vector3.Lerp(toWorldSpace(previousLoc, previousHeight), toWorldSpace(nextLoc, nextHeight), progressOnCurrentSegment);
+            var realPos = GameManager.TerrainManagerInstance.LerpWorldSpacePositionBetweenLocations(previousLoc, nextLoc, progressOnCurrentSegment) + surfaceOffset;
             gameObject.transform.position = realPos;
 
 
@@ -158,7 +169,7 @@ public class CarPathfinder : MonoBehaviour
         if (path == null || seg + 1 >= path.Count) { return null; }
 
         var loc = path[seg];
-        var current = roadManager.GetComponent<RoadManager>().tiles[loc.row, loc.col];
+        var current = roadManager.tiles[loc.row, loc.col];
 
         Queue<CarPathfinder> queue = null;
 
@@ -226,6 +237,15 @@ public class CarPathfinder : MonoBehaviour
 
     public Location GetCurrentLocation() {
         return path[segment];
+    }
+
+    public void RefreshColor() {
+        gameObject.GetComponent<MeshRenderer>().material = myMaterial;
+    }
+
+    public void SetColor() {
+        myMaterial = roadManager.data.carColors[Random.Range(0, roadManager.data.carColors.Length)];
+        gameObject.GetComponent<MeshRenderer>().material = myMaterial;
     }
 
     public void OnLeftClick() {
