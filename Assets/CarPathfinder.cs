@@ -30,12 +30,12 @@ public class CarPathfinder : MonoBehaviour
         t.Start();
     }
 
-    Vector3 toWorldSpace(int row, int col, int height)
+    Vector3 toWorldSpace(int row, int col, float height)
     {
         return new Vector3((col * 4) + 2, height, (row * 4) + 2);
     }
 
-    Vector3 toWorldSpace(Location loc, int height)
+    Vector3 toWorldSpace(Location loc, float height)
     {
         return toWorldSpace(loc.row, loc.col, height);
     }
@@ -126,7 +126,10 @@ public class CarPathfinder : MonoBehaviour
             var nextLoc = path[segment];
 
             // Lets do a spline!
-            var realPos = Vector3.Lerp(toWorldSpace(previousLoc, 4), toWorldSpace(nextLoc, 4), progressOnCurrentSegment);
+            float surfaceOffset = 0.1f;
+            float previousHeight = GameManager.TerrainManagerInstance.GetWorldHeightAtLocation(previousLoc) + surfaceOffset;
+            float nextHeight = GameManager.TerrainManagerInstance.GetWorldHeightAtLocation(nextLoc) + surfaceOffset;
+            var realPos = Vector3.Lerp(toWorldSpace(previousLoc, previousHeight), toWorldSpace(nextLoc, nextHeight), progressOnCurrentSegment);
             gameObject.transform.position = realPos;
 
 
