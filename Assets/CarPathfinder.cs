@@ -26,6 +26,9 @@ public class CarPathfinder : MonoBehaviour
             segment = 1;
             path = startTile.findPathToLocation(endTile.location);
             needsAMove = true;
+            if(path == null) {
+                Destroy(gameObject);
+            }
         });
         t.Start();
     }

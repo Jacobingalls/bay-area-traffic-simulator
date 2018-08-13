@@ -84,5 +84,14 @@ public class BuildingManager : MonoBehaviour {
 				}
 			}
 		}
+
+		for (var row = 0; row < tiles.GetLength(0); row ++) {
+			for(var col = 0; col < tiles.GetLength(1); col++) {
+				var tile = tiles[row, col];
+				if(tile != null) {
+					tile.maybeMakeACar(buildings);
+				}		
+			}
+		}
 	}
 }
