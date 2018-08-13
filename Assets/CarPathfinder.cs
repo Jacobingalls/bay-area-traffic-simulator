@@ -52,6 +52,9 @@ public class CarPathfinder : MonoBehaviour
         if (startTile != null && endTile != null && path != null) {
             if (segment >= path.Count) { return; }
 
+            var previousLoc = path[segment - 1];
+            var previous = roadManager.GetComponent<RoadManager>().tiles[previousLoc.row, previousLoc.col];
+
             var loc = path[segment];
             var current = roadManager.GetComponent<RoadManager>().tiles[loc.row, loc.col];
 
@@ -70,14 +73,13 @@ public class CarPathfinder : MonoBehaviour
             switch (dir) {
                 case DirectionOfTravel.Up:
                 case DirectionOfTravel.Down:
-                    speed = current.verticalRoad.speed();
+                    speed = current.verticalRoad.speed() > previous.verticalRoad.speed() ? previous.verticalRoad.speed() : current.verticalRoad.speed();
                     break;
                 case DirectionOfTravel.Left:
                 case DirectionOfTravel.Right:
-                    speed = current.horizontalRoad.speed();
+                    speed = current.horizontalRoad.speed() > previous.verticalRoad.speed() ? previous.horizontalRoad.speed() : current.horizontalRoad.speed();
                     break;
             }
-
 
             gameObject.GetComponent<Renderer>().material = green;
 
@@ -122,7 +124,7 @@ public class CarPathfinder : MonoBehaviour
                 progressOnCurrentSegment = 1.0f;
             }
 
-            var previousLoc = path[segment - 1];
+            previousLoc = path[segment - 1];
             var nextLoc = path[segment];
 
             // Lets do a spline!
