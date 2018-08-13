@@ -237,6 +237,8 @@ public class TerrainManager : MonoBehaviour {
 
 		var meshRenderer = roads.AddComponent<MeshRenderer>();
 		meshRenderer.material = data.roadMaterial;
+		meshRenderer.receiveShadows = false;
+		meshRenderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
 		var meshFilter = roads.AddComponent<MeshFilter>();
 		var mesh = meshFilter.mesh;
 
@@ -617,6 +619,42 @@ public class TerrainManager : MonoBehaviour {
 	public float GetWorldHeightAtLocation(Location loc) {
 		return heights[loc.row * 4, loc.col * 4] * data.yScale;
 	}
+
+	public Vector3 LerpWorldSpacePositionBetweenLocations(Location start, Location end, float pct) {
+		float startHeight = heights[start.row * 4, start.col * 4] * data.yScale;
+		float endHeight = heights[end.row * 4, end.col * 4] * data.yScale;
+		float height;
+		if(start.col < end.col || start.row < end.row) {
+			if(pct <= 0.25f) {
+				height = startHeight;
+			} else if (pct >= 0.50f) {
+				height = endHeight;
+			} else {
+				height = Mathf.Lerp(startHeight, endHeight, (pct - 0.25f) / 0.25f);
+			}
+		} else {
+			if(pct <= 0.5f) {
+				height = startHeight;
+			} else if (pct >= 0.75f) {
+				height = endHeight;
+			} else {
+				height = Mathf.Lerp(startHeight, endHeight, (pct - 0.5f) / 0.25f);
+			}
+		}
+
+
+		return Vector3.Lerp(ToWorldSpace(start, height), ToWorldSpace(end, height), pct);
+	}
+
+	public Vector3 ToWorldSpace(int row, int col, float height)
+    {
+        return new Vector3((col * 4) + 2, height, (row * 4) + 2);
+    }
+
+    public Vector3 ToWorldSpace(Location loc, float height)
+    {
+        return ToWorldSpace(loc.row, loc.col, height);
+    }
 
 	// Update is called once per frame
 	void Update () {

@@ -13,6 +13,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   autoUpdate: 1
   enableCarSim: 1
+  simpleCarSim: 0
   drawDebug: 0
+  debugCarTraffic: 0
   carModel: {fileID: 1564882776571400, guid: 5ce25e7a338714158a91b2f59071c017, type: 2}
   roadMap: {fileID: 2800000, guid: 98401263ee97b4617a963a0b8ba38b51, type: 3}
+  red: {fileID: 2100000, guid: 4c05f0e1eb41b42c5854389bd474230d, type: 2}
+  green: {fileID: 2100000, guid: 8f04a07d0e5204d869d58ebc5534c36d, type: 2}
+  yellow: {fileID: 2100000, guid: c5e93014dff644fba84e606a6f0abe49, type: 2}
+  carColors:
+  - {fileID: 2100000, guid: 7415227af1abd40dc9fef327ba5140a1, type: 2}
+  - {fileID: 2100000, guid: fefad87570e10408cbda3d0125f34a11, type: 2}
+  - {fileID: 2100000, guid: 540f77069b3854060b36770a5a726fb7, type: 2}
+  - {fileID: 2100000, guid: d63742faf81c1447ca305dc3ea844799, type: 2}
+  - {fileID: 2100000, guid: a647484e632d34b2f9443e2f65c3b96e, type: 2}

@@ -31,9 +31,9 @@ public class Road {
         switch (size)
         {
             case Size.Medium:
-                return 5.0f;
+                return 1.5f;
             case Size.Large:
-                return 10.0f;
+                return 2.0f;
             default:
                 return 1.0f; // Small and invalid
         }
@@ -562,12 +562,13 @@ public class RoadManager : MonoBehaviour {
 	void makeACarGo(RoadTile start, RoadTile end) {
         var car = Instantiate(data.carModel);
         var carPathfinder = car.GetComponent<CarPathfinder>();
-        carPathfinder.roadManager = gameObject;
+        carPathfinder.roadManager = this;
         carPathfinder.startTile = start;
         carPathfinder.endTile = end;
 
         carPathfinder.originalStart = start;
         carPathfinder.originalEnd = end;
+        carPathfinder.SetColor();
 
         carPathfinder.planAndGo();
     }

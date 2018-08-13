@@ -1,0 +1,48 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7e8aaeff1da7641ba9b2732ced252c34, type: 3}
+  m_Name: NewTerrainData
+  m_EditorClassIdentifier: 
+  autoUpdate: 1
+  width: 200
+  height: 300
+  yScale: 0.8333333
+  quantizationRange: 6
+  heightmap: {fileID: 2800000, guid: 2a152a831ce2d4f61920740a04784434, type: 3}
+  terrainMaterial: {fileID: 2100000, guid: 5546774b529024687a6c166b7da60872, type: 2}
+  roadMaterial: {fileID: 2100000, guid: 5063f170e8d4a45bbbf62522850fac8d, type: 2}
+  baseColors:
+  - {r: 0.8207547, g: 0.6428047, b: 0.18195976, a: 0}
+  - {r: 0.3726415, g: 0.5, b: 0.11084905, a: 0}
+  - {r: 0.19324832, g: 0.4528302, b: 0.044855822, a: 0}
+  - {r: 0.15691748, g: 0.26415092, b: 0.0735137, a: 0}
+  - {r: 0.09433961, g: 0.06793638, b: 0.054734774, a: 0}
+  - {r: 0.254717, g: 0.15987262, b: 0.09732112, a: 0}
+  - {r: 0.4339623, g: 0.4339623, b: 0.4339623, a: 0}
+  - {r: 0.6886792, g: 0.6854307, b: 0.68597853, a: 0}
+  baseStartHeights:
+  - 0
+  - 0.145
+  - 0.275
+  - 0.464
+  - 0.558
+  - 0.652
+  - 0.703
+  - 0.797
+  baseBlendValues:
+  - 0.007
+  - 0.037
+  - 0.355
+  - 0.21
+  - 0.053
+  - 0.111
+  - 0.082
+  - 0.058
