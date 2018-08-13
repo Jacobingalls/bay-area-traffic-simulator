@@ -84,6 +84,16 @@ public class RoadTile {
             phase = DirectionOfTravel.Up;
         }
 
+        if (horizontalRoad != null && horizontalRoad.size == Size.Large) {
+            releaseACarInDirection(DirectionOfTravel.Left);
+            releaseACarInDirection(DirectionOfTravel.Right);
+        }
+
+        if (verticalRoad != null && verticalRoad.size == Size.Large) {
+            releaseACarInDirection(DirectionOfTravel.Up);
+            releaseACarInDirection(DirectionOfTravel.Down);
+        }
+
         // Check to see if we need to change the light.
         currentSeconds += timedelta;
         if (currentSeconds > totalSeconds) {
@@ -240,25 +250,37 @@ public class RoadTile {
                 // If we have a vertical road, and they have a vertical road going up
                 if (verticalRoad != null && verticalRoad.up_left && nextRoadTile.verticalRoad != null && nextRoadTile.verticalRoad.up_left) {
                     var cost = 0 ;//roadManager.tiles[tile.location.row, tile.location.col].upQueue.Count;
-                    return nextRoadTile.verticalRoad.cost() + cost;
+                    return verticalRoad.cost()/2 + nextRoadTile.verticalRoad.cost()/2 + cost;
+                } else if (verticalRoad != null && verticalRoad.up_left && nextRoadTile.horizontalRoad != null) {
+                    var cost = 0 ;//roadManager.tiles[tile.location.row, tile.location.col].upQueue.Count;
+                    return verticalRoad.cost() + cost;
                 }
 
                 break;
             case DirectionOfTravel.Down:
                 if (verticalRoad != null && verticalRoad.down_right && nextRoadTile.verticalRoad != null && nextRoadTile.verticalRoad.down_right) {
-                    return nextRoadTile.verticalRoad.cost();
+                    return verticalRoad.cost()/2 + nextRoadTile.verticalRoad.cost()/2;
+                } else if (verticalRoad != null && verticalRoad.down_right && nextRoadTile.horizontalRoad != null) {
+                    var cost = 0 ;//roadManager.tiles[tile.location.row, tile.location.col].upQueue.Count;
+                    return verticalRoad.cost() + cost;
                 }
 
                 break;
             case DirectionOfTravel.Left:
                 if (horizontalRoad != null && horizontalRoad.up_left && nextRoadTile.horizontalRoad != null && nextRoadTile.horizontalRoad.up_left) {
-                    return nextRoadTile.horizontalRoad.cost();
+                    return horizontalRoad.cost()/2 + nextRoadTile.horizontalRoad.cost()/2;
+                } else if (horizontalRoad != null && horizontalRoad.up_left && nextRoadTile.verticalRoad != null) {
+                    var cost = 0 ;//roadManager.tiles[tile.location.row, tile.location.col].upQueue.Count;
+                    return horizontalRoad.cost() + cost;
                 }
 
                 break;
             case DirectionOfTravel.Right:
                 if (horizontalRoad != null && horizontalRoad.down_right && nextRoadTile.horizontalRoad != null && nextRoadTile.horizontalRoad.down_right) {
-                    return nextRoadTile.horizontalRoad.cost();
+                    return horizontalRoad.cost()/2 + nextRoadTile.horizontalRoad.cost()/2;
+                } else if (horizontalRoad != null && horizontalRoad.down_right && nextRoadTile.verticalRoad != null) {
+                    var cost = 0 ;//roadManager.tiles[tile.location.row, tile.location.col].upQueue.Count;
+                    return horizontalRoad.cost() + cost;
                 }
 
                 break;
