@@ -85,7 +85,7 @@ public class BuildingTile {
     }
 
     public void maybeMakeACar(List<GameObject> buildings) {
-        if (GameManager.Instance.RoadManager.data.enableCarSim && rnd.NextDouble() <= .005) {
+        if (GameManager.Instance.RoadManager.data.enableCarSim && rnd.NextDouble() <= .001) {
             var x = (rnd.Next() % 5) + rnd.Next() % 2 + location.row - 3;
             var y = (rnd.Next() % 5) + rnd.Next() % 2 + location.col - 3;
             if (x > 0 && x < 50 && y > 0 && y < 75) {

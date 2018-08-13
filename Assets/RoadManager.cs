@@ -291,7 +291,7 @@ public class RoadTile {
 
     static public int Heuristic(Location a, Location b)
     {
-        return ((int) ((Math.Abs(a.row - b.row) + Math.Abs(a.col - b.col)))) * 100; // Assume small roads.
+        return ((int) ((Math.Abs(a.row - b.row) + Math.Abs(a.col - b.col)))) * 10; // Assume small roads.
     }
 
     /*
