@@ -85,15 +85,14 @@ public class BuildingTile {
     }
 
     public void maybeMakeACar(List<GameObject> buildings) {
-        if (GameManager.Instance.RoadManager.data.enableCarSim && rnd.NextDouble() <= .001) {
-            var b = buildings[rnd.Next() % buildings.Count];
-            var loc = new Location();
-            loc.row = (int)((b.transform.position.y - 2)/4);
-            loc.col = (int)((b.transform.position.x - 2)/4);
-
-            var startTile = GameManager.Instance.RoadManager.tiles[location.row, location.col];
-            var endTile = GameManager.Instance.RoadManager.tiles[loc.row, loc.col];
-            GameManager.Instance.RoadManager.makeACarGo(startTile, endTile);
+        if (GameManager.Instance.RoadManager.data.enableCarSim && rnd.NextDouble() <= .005) {
+            var x = (rnd.Next() % 5) + rnd.Next() % 2 + location.row - 3;
+            var y = (rnd.Next() % 5) + rnd.Next() % 2 + location.col - 3;
+            if (x > 0 && x < 50 && y > 0 && y < 75) {
+                var s = GameManager.Instance.RoadManager.tiles[location.row, location.col];
+                var e = GameManager.Instance.RoadManager.tiles[y, x];
+                GameManager.Instance.RoadManager.makeACarGo(s, e);
+            }
         }
     }
 }
