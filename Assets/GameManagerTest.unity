@@ -296,7 +296,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0bb0679c75d4143da9d4591efa8e9e41, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  carDetailText: {fileID: 249532276}
+  carDetailText: {fileID: 0}
   activeCar: {fileID: 0}
   offset: {x: 0, y: 2.5, z: 0}
 --- !u!224 &496450152
@@ -699,7 +699,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ff26db721962cdf4a8edcdfa9a767d2a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  profile: {fileID: 11400000, guid: 2db7cdf1603394a2eba0f9dfbe19292c, type: 2}
+  profile: {fileID: 0}
 --- !u!1 &1215519374
 GameObject:
   m_ObjectHideFlags: 0
