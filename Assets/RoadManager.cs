@@ -35,7 +35,7 @@ public class Road {
             case Size.Large:
                 return 10.0f;
             default:
-                return 0.5f; // Small and invalid
+                return 1.0f; // Small and invalid
         }
     }
 }
@@ -521,26 +521,30 @@ public class RoadManager : MonoBehaviour {
             twiddles.Add( 0);
             twiddles.Add( 1);
 
-            makeACarGo(tiles[20, 14], tiles[44, 38]);
+            if(data.simpleCarSim) {
+                makeACarGo(tiles[20, 14], tiles[44, 38]);
+            } else {
+                foreach (var twiddle1 in twiddles)
+                {
+                    foreach (var twiddle2 in twiddles)
+                    {
+                        foreach (var twiddle3 in twiddles)
+                        {
+                            foreach (var twiddle4 in twiddles)
+                            {
+                                // makeACarGo(tiles[24 + twiddle1, 16 + twiddle2], tiles[20 + twiddle3, 22 + twiddle4]);
+                                // makeACarGo(tiles[20 + twiddle1, 16 + twiddle2], tiles[20 + twiddle3, 18 + twiddle4]);
+                                // makeACarGo(tiles[24 + twiddle1, 16 + twiddle2], tiles[19 + twiddle3, 22 + twiddle4]);
+                                // makeACarGo(tiles[24 + twiddle1, 16 + twiddle2], tiles[4  + twiddle3, 40 + twiddle4]);
 
-            // foreach (var twiddle1 in twiddles)
-            // {
-            //     foreach (var twiddle2 in twiddles)
-            //     {
-            //         foreach (var twiddle3 in twiddles)
-            //         {
-            //             foreach (var twiddle4 in twiddles)
-            //             {
-            //                 // makeACarGo(tiles[24 + twiddle1, 16 + twiddle2], tiles[20 + twiddle3, 22 + twiddle4]);
-            //                 // makeACarGo(tiles[20 + twiddle1, 16 + twiddle2], tiles[20 + twiddle3, 18 + twiddle4]);
-            //                 // makeACarGo(tiles[24 + twiddle1, 16 + twiddle2], tiles[19 + twiddle3, 22 + twiddle4]);
-            //                 // makeACarGo(tiles[24 + twiddle1, 16 + twiddle2], tiles[4  + twiddle3, 40 + twiddle4]);
+                                makeACarGo(tiles[20 + twiddle1, 14 + twiddle2], tiles[44  + twiddle3, 38 + twiddle4]);
+                            }
+                        }
+                    }
+                }
+            }
 
-            //                 makeACarGo(tiles[20 + twiddle1, 14 + twiddle2], tiles[44  + twiddle3, 38 + twiddle4]);
-            //             }
-            //         }
-            //     }
-            // }
+
         } 
     }
 
