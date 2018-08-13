@@ -24,6 +24,11 @@ public class Cell {
     public WaterLevel waterLevel;
 }
 
+public class TimePeriod {
+	private int hours;
+	private int minutes;
+}
+
 public class GameManager : MonoBehaviour {
 	public Light sun;
 	public TerrainData terrainData;
@@ -40,6 +45,20 @@ public class GameManager : MonoBehaviour {
 	public RoadManager RoadManager {
 		get {
 			return _roadManager;
+		}
+	}
+
+	private InputManager _inputManager;
+	public InputManager InputManager {
+		get {
+			return _inputManager;
+		}
+	}
+
+	private GUIManager _GUIManager;
+	public GUIManager GUIManager {
+		get {
+			return _GUIManager;
 		}
 	}
 
@@ -81,6 +100,8 @@ public class GameManager : MonoBehaviour {
 	void Start () {
 		_terrainManager = gameObject.AddComponent<TerrainManager>();
 		_roadManager = gameObject.AddComponent<RoadManager>();
+		_inputManager = gameObject.AddComponent<InputManager>();
+		_GUIManager = GameObject.Find("Canvas").GetComponent<GUIManager>();
 
 		_terrainManager.data = terrainData;
 		_roadManager.data = roadData;
@@ -120,6 +141,24 @@ public class GameManager : MonoBehaviour {
 		get {
 			if(_instance != null) {
 				return _instance._roadManager;
+			}
+			return null;
+		}
+	}
+
+	public static InputManager InputManagerInstance {
+		get {
+			if(_instance != null) {
+				return _instance._inputManager;
+			}
+			return null;
+		}
+	}
+
+	public static GUIManager GUIManagerInstance {
+		get {
+			if(_instance != null) {
+				return _instance._GUIManager;
 			}
 			return null;
 		}

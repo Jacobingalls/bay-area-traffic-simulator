@@ -614,6 +614,10 @@ public class TerrainManager : MonoBehaviour {
 		meshFilter.mesh = mesh;
 	}
 	
+	public float GetWorldHeightAtLocation(Location loc) {
+		return heights[loc.row * 4, loc.col * 4] * data.yScale;
+	}
+
 	// Update is called once per frame
 	void Update () {
 		
