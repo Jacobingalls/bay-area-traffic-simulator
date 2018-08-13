@@ -42,7 +42,7 @@ public class CarPathfinder : MonoBehaviour
 
     private void Update()
     {   
-        // timeOnRoad += Time.deltaTime;
+        timeOnRoad += Time.deltaTime;
 
         if (needsAMove) {
             move();
@@ -218,10 +218,6 @@ public class CarPathfinder : MonoBehaviour
 
     public Location GetCurrentLocation() {
         return path[segment];
-    }
-
-    public TimePeriod GetTimeOnRoad() {
-        return null;
     }
 
     public void OnLeftClick() {

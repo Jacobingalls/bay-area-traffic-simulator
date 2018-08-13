@@ -19,10 +19,10 @@ public class InputManager : MonoBehaviour {
 				if(clickable != null) {
 					clickable.onLeftClick.Invoke();
 				}
+			} else {
+				GameManager.GUIManagerInstance.SelectNone();
 			}
-		}
-
-		if ( Input.GetMouseButtonDown (1)){ 
+		} else if ( Input.GetMouseButtonDown (1)){ 
 			RaycastHit hit; 
 			Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition); 
 			if ( Physics.Raycast (ray,out hit)) {
@@ -30,6 +30,8 @@ public class InputManager : MonoBehaviour {
 				if(clickable != null) {
 					clickable.onRightClick.Invoke();
 				}
+			} else {
+				GameManager.GUIManagerInstance.SelectNone();
 			}
 		}
 	}

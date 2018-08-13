@@ -9,24 +9,28 @@ public class CarDetailView : MonoBehaviour {
 
 	public CarPathfinder activeCar;
 
+	private RectTransform rectTransform;
+
+	public Vector3 offset = new Vector3(0.0f, 2.5f, 0.0f);
+
 	// Use this for initialization
 	void Start () {
-		
+		rectTransform = gameObject.GetComponent<RectTransform>();
 	}
 	
 	// Update is called once per frame
-	void Update () {
+	void LateUpdate () {
 		if (activeCar == null) {
 			return;
 		}
 
+		rectTransform.position = Camera.main.WorldToScreenPoint(activeCar.transform.position + offset) + offset * 15.0f;
+
 		carDetailText.text = string.Format(
-			"Origin: {0}\nDestination: {1}\nCurrent Location: {2}\n\nTime on Road: {3}\n\nStatus: {4}",
+			"Origin: {0}\nDestination: {1}\nCurrent Location: {2}",
 			activeCar.originalStart.location,
 			activeCar.originalEnd.location,
-			activeCar.GetCurrentLocation(),
-			0.0f,
-			"???"
+			activeCar.GetCurrentLocation()
 		);
 	}
 }

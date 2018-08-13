@@ -54,8 +54,11 @@ public class GUIManager : MonoBehaviour {
 
 	public void SelectNone() {
 		selectedObject = null;
-		selectedObjectUIElement.gameObject.SetActive(false);
-		selectedObjectUIElement = null;
+
+		if(selectedObjectUIElement != null) {
+			selectedObjectUIElement.gameObject.SetActive(false);
+			selectedObjectUIElement = null;
+		}
 	}
 
 	public void SelectCar(CarPathfinder car) {

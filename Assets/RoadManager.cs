@@ -103,7 +103,9 @@ public class RoadTile {
 
         switch (dir) {
             case DirectionOfTravel.Up:
-                Debug.DrawLine(a, b, Color.magenta, 0.5f);
+                if(roadManager.data.drawDebug) { 
+                    Debug.DrawLine(a, b, Color.magenta, 0.5f);
+                }
 
                 if (upQueue.Count > 0) {
                     if (upQueue.Peek().canMove()) {
@@ -119,7 +121,9 @@ public class RoadTile {
             case DirectionOfTravel.Down:
                 a = new Vector3(location.col * 4 + 2, 8, location.row * 4 + 2);
                 b = new Vector3(location.col * 4 + 2, 8, location.row * 4 + 1);
-                Debug.DrawLine(a, b, Color.magenta, 0.5f);
+                if(roadManager.data.drawDebug) { 
+                    Debug.DrawLine(a, b, Color.magenta, 0.5f);
+                }
 
                 if (downQueue.Count > 0) {
                     if (downQueue.Peek().canMove())
@@ -137,8 +141,10 @@ public class RoadTile {
             case DirectionOfTravel.Left:
                 a = new Vector3(location.col * 4 + 1, 8, location.row * 4 + 2);
                 b = new Vector3(location.col * 4 + 2, 8, location.row * 4 + 2);
-                Debug.DrawLine(a, b, Color.magenta, 0.5f);
-
+                if(roadManager.data.drawDebug) { 
+                    Debug.DrawLine(a, b, Color.magenta, 0.5f);
+                }
+                
                 if (leftQueue.Count > 0) {
                     if (leftQueue.Peek().canMove())
                     {
@@ -155,8 +161,9 @@ public class RoadTile {
             case DirectionOfTravel.Right:
                 a = new Vector3(location.col * 4 + 3, 8, location.row * 4 + 2);
                 b = new Vector3(location.col * 4 + 2, 8, location.row * 4 + 2);
-                Debug.DrawLine(a, b, Color.magenta, 0.5f);
-
+                if(roadManager.data.drawDebug) { 
+                    Debug.DrawLine(a, b, Color.magenta, 0.5f);
+                }
                 if (rightQueue.Count > 0) {
                     if (rightQueue.Peek().canMove())
                     {
