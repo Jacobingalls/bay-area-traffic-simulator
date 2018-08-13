@@ -78,7 +78,7 @@ public class CarPathfinder : MonoBehaviour
 
             gameObject.GetComponent<Renderer>().material = green;
 
-            progressOnCurrentSegment += Time.deltaTime * 0.05f * speed;
+            progressOnCurrentSegment += Time.deltaTime * 0.5f * speed;
 
             // Our position is based on our index.
             var queue = getOurQueue(segment - 1);
@@ -144,7 +144,7 @@ public class CarPathfinder : MonoBehaviour
     
 
     public Queue<CarPathfinder> getOurQueue(int seg) {
-        if (seg + 1 >= path.Count) { return null; }
+        if (path == null || seg + 1 >= path.Count) { return null; }
 
         var loc = path[seg];
         var current = roadManager.GetComponent<RoadManager>().tiles[loc.row, loc.col];
