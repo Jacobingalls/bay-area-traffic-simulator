@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b5cb16b6aafc24af7946fa866a7e20ed, type: 3}
+  m_Name: BuildingData
+  m_EditorClassIdentifier: 
+  autoUpdate: 1
+  building: {fileID: 1079978500639350, guid: 590f1bf777800454a88bf17238a1be70, type: 2}
+  lowDensityResidential: {fileID: 2100000, guid: 320e31f098da54a2781167ebbf8a9d77,
+    type: 2}
+  mediumDensityResidential: {fileID: 2100000, guid: bd48d599f1f604297adc73f3689105c7,
+    type: 2}
+  highDensityResidential: {fileID: 2100000, guid: a0321b3f17cac4fc0ba55b987cb15a33,
+    type: 2}
+  lowDensityCommercial: {fileID: 2100000, guid: 433acc4bac8d14d29b0986946383a2e3,
+    type: 2}
+  mediumDensityCommercial: {fileID: 2100000, guid: 8a0c6aae6786848dbbc78142e4bba085,
+    type: 2}
+  highDensityCommercial: {fileID: 2100000, guid: c3821c02dd8a94368aaab470c3800eb5,
+    type: 2}
+  lowDensityIndustrial: {fileID: 2100000, guid: 74ebfbf4df098431e917a78b8e9c6c5b,
+    type: 2}
+  mediumDensityIndustrial: {fileID: 2100000, guid: 98c215aeba83a411093c882a6035a8e0,
+    type: 2}
+  highDensityIndustrial: {fileID: 2100000, guid: 84933497ab63a44e5a5eaebe1703d7f2,
+    type: 2}
+  zoningMap: {fileID: 2800000, guid: 0af7334e9695e4e2c891524a58dbb706, type: 3}
+  globalBuildingScale: 1

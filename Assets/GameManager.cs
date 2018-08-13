@@ -1,9 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-public class BuildingTile {
-
-}
 
 public class Special {
 
@@ -34,6 +31,8 @@ public class GameManager : MonoBehaviour {
 	public TerrainData terrainData;
 	public RoadData roadData;
 
+	public BuildingData BuildingData;
+
 	private TerrainManager _terrainManager;
 	public TerrainManager TerrainManager {
 		get {
@@ -61,6 +60,13 @@ public class GameManager : MonoBehaviour {
 			return _GUIManager;
 		}
 	}
+
+    private BuildingManager _buildingManager;
+    public BuildingManager BuildingManager {
+        get {
+            return _buildingManager;
+        }
+    }
 
 	public const int HOURS_PER_DAY = 24; 
 	public const int MINUTES_PER_HOUR = 60; 
@@ -102,13 +108,16 @@ public class GameManager : MonoBehaviour {
 		_roadManager = gameObject.AddComponent<RoadManager>();
 		_inputManager = gameObject.AddComponent<InputManager>();
 		_GUIManager = GameObject.Find("Canvas").GetComponent<GUIManager>();
+		_buildingManager = gameObject.AddComponent<BuildingManager>();
 
 		_terrainManager.data = terrainData;
 		_roadManager.data = roadData;
+		_buildingManager.data = BuildingData;
 
 		_terrainManager.Initialize();
 		_roadManager.Initialize(_terrainManager);
 		_terrainManager.GenerateMeshes(_roadManager);
+		_buildingManager.Initialize(_terrainManager);
 
 		currentTime = secondsPerDay * ((startingHour/(float)HOURS_PER_DAY) + ((startingMinute / (float)MINUTES_PER_HOUR) / HOURS_PER_DAY));
 	}
@@ -163,4 +172,13 @@ public class GameManager : MonoBehaviour {
 			return null;
 		}
 	}
+
+    public static BuildingManager BuildingManagerInstance {
+        get { 
+            if(_instance != null) {
+                return _instance._buildingManager;
+            }
+            return null;
+        }
+    }
 }

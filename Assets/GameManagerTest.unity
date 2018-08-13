@@ -871,6 +871,7 @@ MonoBehaviour:
   sun: {fileID: 1215519375}
   terrainData: {fileID: 11400000, guid: e9679816db4044a5da6a294d98e24daa, type: 2}
   roadData: {fileID: 11400000, guid: f9c4362529ada4f8899c1a3411a572b6, type: 2}
+  BuildingData: {fileID: 11400000, guid: afe3e9f5444fb41429f5f7f41bb0d7c9, type: 2}
   startingHour: 8
   startingMinute: 0
   secondsPerDay: 300
