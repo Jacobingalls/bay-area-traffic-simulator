@@ -81,6 +81,21 @@ public class CarPathfinder : MonoBehaviour
                     break;
             }
 
+            switch (dir) {
+                case DirectionOfTravel.Right:
+                    transform.rotation = Quaternion.Euler(0.0f, 0.0f, 0.0f);
+                    break;
+                case DirectionOfTravel.Up:
+                    transform.rotation = Quaternion.Euler(0.0f, 90.0f, 0.0f);
+                    break;
+                case DirectionOfTravel.Left:
+                    transform.rotation = Quaternion.Euler(0.0f, 180.0f, 0.0f);
+                    break;
+                case DirectionOfTravel.Down:
+                    transform.rotation = Quaternion.Euler(0.0f, 270.0f, 0.0f);
+                    break;
+            }
+
             gameObject.GetComponent<Renderer>().material = green;
 
             progressOnCurrentSegment += Time.deltaTime * 0.5f * speed;
