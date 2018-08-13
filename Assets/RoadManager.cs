@@ -5,8 +5,8 @@ using System.Threading;
 using UnityEngine;
 
 public enum Size : byte { Small, Medium, Large }
-public enum Density : byte { Rural, SubUrban, Urban }
-public enum TitleType: byte { Nature, Water, Housing, Commerce, Offices, Industrial}
+//public enum Density : byte { Rural, SubUrban, Urban }
+//public enum TitleType: byte { Nature, Water, Housing, Commerce, Offices, Industrial}
 
 // Road is an edge, it has a start, end and size. They can be unidirectional or bidirectional
 public class Road {
@@ -59,7 +59,7 @@ public class RoadTile {
     public bool horizontalPower;
 
     // What type of tile is this, how dense?
-    public TitleType type;
+    public TileType type;
     public Density density;
 
     public Queue<CarPathfinder> upQueue, downQueue, leftQueue, rightQueue;
