@@ -27,8 +27,61 @@ public class BuildingTile {
 
     // Where the building is located in space.
     public Location location;
+    public float height;
 
     // The building that this building tile represents.
     public Building building;
+
+
+    public BuildingType type;
+    public Density density;
+
+    System.Random rnd = new System.Random();
+
+    public float GetHeight() {
+        switch(density) {
+            case Density.SubUrban:
+                return height + ((float)rnd.NextDouble() / 3.0f);
+            case Density.Urban:
+                return height + 1f + ((float)rnd.NextDouble() / 3.0f);
+            default:
+                return height - 0.75f + ((float)rnd.NextDouble() / 3.0f);
+        }
+    }
+    public Material GetMaterial() {
+        switch (type) {
+        case BuildingType.Residential:
+            switch(density) {
+            case Density.Rural:
+                return buildingManager.data.lowDensityResidential;
+            case Density.SubUrban:
+                return buildingManager.data.mediumDensityResidential;
+            case Density.Urban:
+                return buildingManager.data.highDensityResidential;
+            }
+            break;
+        case BuildingType.Commerce:
+            switch(density) {
+            case Density.Rural:
+                return buildingManager.data.lowDensityCommercial;
+            case Density.SubUrban:
+                return buildingManager.data.mediumDensityCommercial;
+            case Density.Urban:
+                return buildingManager.data.highDensityCommercial;
+            }
+            break;
+        case BuildingType.Industrial:
+            switch(density) {
+            case Density.Rural:
+                return buildingManager.data.lowDensityIndustrial;
+            case Density.SubUrban:
+                return buildingManager.data.mediumDensityIndustrial;
+            case Density.Urban:
+                return buildingManager.data.highDensityIndustrial;
+            }
+            break;
+        }
+        return null;
+    }
 }
 

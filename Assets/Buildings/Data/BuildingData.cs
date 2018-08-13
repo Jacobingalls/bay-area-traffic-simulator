@@ -7,6 +7,14 @@ public class BuildingData : UpdateableData
 {
     [Header("Building Manager State")]
 
+    public GameObject building;
+    public Material lowDensityResidential, mediumDensityResidential, highDensityResidential;
+    public Material lowDensityCommercial, mediumDensityCommercial, highDensityCommercial;
+    public Material lowDensityIndustrial, mediumDensityIndustrial, highDensityIndustrial;
+
+    public Texture2D zoningMap;
+
+
     // The list of models which should be used for residential buildings.
     public GameObject[,] residentialBuildings;
 

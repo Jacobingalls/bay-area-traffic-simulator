@@ -31,6 +31,8 @@ public class GameManager : MonoBehaviour {
 	public TerrainData terrainData;
 	public RoadData roadData;
 
+	public BuildingData BuildingData;
+
 	private TerrainManager _terrainManager;
 	public TerrainManager TerrainManager {
 		get {
@@ -106,13 +108,16 @@ public class GameManager : MonoBehaviour {
 		_roadManager = gameObject.AddComponent<RoadManager>();
 		_inputManager = gameObject.AddComponent<InputManager>();
 		_GUIManager = GameObject.Find("Canvas").GetComponent<GUIManager>();
+		_buildingManager = gameObject.AddComponent<BuildingManager>();
 
 		_terrainManager.data = terrainData;
 		_roadManager.data = roadData;
+		_buildingManager.data = BuildingData;
 
 		_terrainManager.Initialize();
 		_roadManager.Initialize(_terrainManager);
 		_terrainManager.GenerateMeshes(_roadManager);
+		_buildingManager.Initialize(_terrainManager);
 
 		currentTime = secondsPerDay * ((startingHour/(float)HOURS_PER_DAY) + ((startingMinute / (float)MINUTES_PER_HOUR) / HOURS_PER_DAY));
 	}
