@@ -77,7 +77,7 @@ public class CarPathfinder : MonoBehaviour
                     break;
                 case DirectionOfTravel.Left:
                 case DirectionOfTravel.Right:
-                    speed = current.horizontalRoad.speed() > previous.verticalRoad.speed() ? previous.horizontalRoad.speed() : current.horizontalRoad.speed();
+                    speed = current.horizontalRoad.speed() > previous.horizontalRoad.speed() ? previous.horizontalRoad.speed() : current.horizontalRoad.speed();
                     break;
             }
 
